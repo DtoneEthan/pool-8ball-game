@@ -6,129 +6,103 @@
 <title>🎱 8球台球 - Pool 8-Ball</title>
 <style>
 :root {
-  --felt: #0d7a3e; --felt-dark: #0a5c2f; --wood: #6b3a2a;
-  --wood-light: #8b5a3c; --gold: #d4a853; --bg: #1a1a2e;
-  --panel: #16213e; --text: #e0e0e0; --text-dim: #999;
-  --accent: #e94560; --accent2: #0f3460; --white: #fff;
-  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  --felt:#0d7a3e; --wood:#6b3a2a; --gold:#d4a853; --bg:#1a1a2e;
+  --panel:#16213e; --text:#e0e0e0; --dim:#999; --accent:#e94560; --accent2:#0f3460;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
 body {
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  overflow-x: hidden;
-  user-select: none;
-  -webkit-user-select: none;
-  -webkit-tap-highlight-color: transparent;
-  background-image: radial-gradient(ellipse at center, #1e2a3a 0%, #0d1117 100%);
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  background:radial-gradient(ellipse at center,#1e2a3a 0%,#0d1117 100%);
+  color:var(--text); display:flex; justify-content:center; align-items:center;
+  min-height:100vh; overflow-x:hidden; user-select:none;
+  -webkit-user-select:none; -webkit-tap-highlight-color:transparent;
 }
-#app { display:flex; flex-direction:column; align-items:center; gap:12px; padding:10px; max-width:1100px; width:100%; }
-h1 { font-size:1.8rem; font-weight:700; color:var(--gold); letter-spacing:2px; text-shadow:0 2px 4px rgba(0,0,0,0.5); }
-h1 span { font-size:1rem; color:var(--text-dim); margin-left:8px; }
+#app { display:flex; flex-direction:column; align-items:center; gap:8px; padding:8px; max-width:1100px; width:100%; }
+h1 { font-size:1.7rem; font-weight:700; color:var(--gold); letter-spacing:2px; }
+h1 span { font-size:0.9rem; color:var(--dim); margin-left:8px; }
 
-#menu { display:flex; flex-direction:column; align-items:center; gap:20px; padding:40px 30px; background:var(--panel); border-radius:16px; box-shadow:var(--shadow); min-width:360px; border:1px solid rgba(255,255,255,0.06); }
-#menu h2 { font-size:1.4rem; color:var(--gold); margin-bottom:8px; }
-.mode-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; width:100%; }
-.mode-btn { display:flex; flex-direction:column; align-items:center; gap:6px; padding:20px 16px; border:2px solid rgba(255,255,255,0.1); border-radius:12px; background:var(--accent2); color:var(--text); cursor:pointer; transition:all 0.25s; font-size:1rem; font-family:inherit; }
+#menu { display:flex; flex-direction:column; align-items:center; gap:18px; padding:36px 28px; background:var(--panel); border-radius:16px; box-shadow:0 4px 24px rgba(0,0,0,0.4); min-width:340px; border:1px solid rgba(255,255,255,0.06); }
+#menu h2 { font-size:1.3rem; color:var(--gold); }
+.mode-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; width:100%; }
+.mode-btn { display:flex; flex-direction:column; align-items:center; gap:5px; padding:18px 14px; border:2px solid rgba(255,255,255,0.1); border-radius:12px; background:var(--accent2); color:var(--text); cursor:pointer; transition:all 0.25s; font-size:0.95rem; font-family:inherit; }
 .mode-btn:hover { border-color:var(--gold); transform:translateY(-2px); box-shadow:0 8px 24px rgba(212,168,83,0.2); }
 .mode-btn:active { transform:scale(0.97); }
-.mode-btn .icon { font-size:2.2rem; }
+.mode-btn .icon { font-size:2rem; }
 .mode-btn .label { font-weight:600; }
-.mode-btn .desc { font-size:0.75rem; color:var(--text-dim); }
-.mode-btn.bad-guy { border-color:var(--accent); background:linear-gradient(135deg, #3d0a0a, #5c1a1a); }
+.mode-btn .desc { font-size:0.7rem; color:var(--dim); }
+.mode-btn.bad-guy { border-color:var(--accent); background:linear-gradient(135deg,#3d0a0a,#5c1a1a); }
 .mode-btn.bad-guy:hover { border-color:#ff4444; box-shadow:0 8px 24px rgba(233,69,96,0.3); }
 
-#game-container { display:none; flex-direction:column; align-items:center; gap:8px; width:100%; }
-#game-header { display:flex; justify-content:space-between; align-items:center; width:100%; max-width:900px; padding:8px 16px; background:var(--panel); border-radius:10px; gap:12px; flex-wrap:wrap; border:1px solid rgba(255,255,255,0.06); }
-#game-header .info { display:flex; align-items:center; gap:12px; font-size:0.9rem; }
-#game-header .turn-indicator { padding:6px 14px; border-radius:20px; font-weight:700; font-size:0.85rem; transition:all 0.3s; white-space:nowrap; }
+#game-container { display:none; flex-direction:column; align-items:center; gap:6px; width:100%; }
+#game-header { display:flex; justify-content:space-between; align-items:center; width:100%; max-width:900px; padding:7px 14px; background:var(--panel); border-radius:10px; gap:10px; flex-wrap:wrap; border:1px solid rgba(255,255,255,0.06); }
+#game-header .info { display:flex; align-items:center; gap:10px; font-size:0.85rem; }
+.turn-indicator { padding:5px 12px; border-radius:16px; font-weight:700; font-size:0.8rem; white-space:nowrap; }
 .turn-p1 { background:#e94560; color:#fff; }
 .turn-p2 { background:#3b82f6; color:#fff; }
 .turn-ai { background:#8b5cf6; color:#fff; animation:pulse 1.2s infinite; }
-@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.6;} }
-#score { font-weight:700; font-size:1.1rem; color:var(--gold); white-space:nowrap; }
-#pocket-display { font-size:0.8rem; color:var(--text-dim); white-space:nowrap; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+#score { font-weight:700; font-size:1rem; color:var(--gold); white-space:nowrap; }
+#pocket-display { font-size:0.75rem; color:var(--dim); white-space:nowrap; }
 
-.btn { padding:8px 18px; border:none; border-radius:8px; cursor:pointer; font-weight:600; font-size:0.85rem; transition:all 0.2s; background:var(--accent2); color:var(--text); font-family:inherit; }
+.btn { padding:7px 16px; border:none; border-radius:7px; cursor:pointer; font-weight:600; font-size:0.8rem; transition:all 0.2s; background:var(--accent2); color:var(--text); font-family:inherit; }
 .btn:hover { filter:brightness(1.2); transform:translateY(-1px); }
 .btn:active { transform:scale(0.96); }
 .btn.back { background:transparent; border:1px solid rgba(255,255,255,0.2); }
 .btn.gold { background:var(--gold); color:#1a1a2e; }
 
-canvas { border-radius:12px; box-shadow:var(--shadow); cursor:crosshair; max-width:100%; height:auto; }
+#canvas-wrap { position:relative; display:inline-block; line-height:0; }
+canvas { border-radius:12px; box-shadow:0 4px 24px rgba(0,0,0,0.4); max-width:100%; height:auto; display:block; }
+#canvas-wrap canvas { cursor:crosshair; }
+#canvas-wrap.pulling canvas { cursor:grabbing; }
 
-#power-bar-container { display:none; width:100%; max-width:900px; height:10px; background:rgba(255,255,255,0.1); border-radius:5px; overflow:hidden; }
-#power-bar { height:100%; background:linear-gradient(90deg, #4ade80, #facc15, #ef4444); border-radius:5px; transition:width 0.05s linear; width:0%; }
+/* 力度弧形条 - 画在 canvas 上面 */
+#power-overlay {
+  position:absolute; pointer-events:none;
+  top:0; left:0; width:100%; height:100%;
+}
 
-#message { text-align:center; font-size:0.95rem; color:var(--gold); min-height:24px; font-weight:600; transition:all 0.3s; }
+#spin-control { display:flex; align-items:center; gap:6px; width:100%; max-width:900px; justify-content:center; flex-wrap:wrap; }
+#spin-label { font-size:0.78rem; color:var(--dim); }
+.spin-btn {
+  width:38px; height:38px; border-radius:50%; border:2px solid rgba(255,255,255,0.2);
+  background:var(--panel); color:var(--text); cursor:pointer; font-size:1rem;
+  transition:all 0.2s; display:flex; align-items:center; justify-content:center;
+  font-family:inherit; position:relative;
+}
+.spin-btn:hover { border-color:var(--gold); }
+.spin-btn.active { border-color:var(--gold); background:rgba(212,168,83,0.2); box-shadow:0 0 10px rgba(212,168,83,0.3); }
+.spin-btn .dot { position:absolute; width:6px; height:6px; border-radius:50%; background:var(--gold); }
+.spin-top .dot { top:3px; left:50%; transform:translateX(-50%); }
+.spin-bottom .dot { bottom:3px; left:50%; transform:translateX(-50%); }
+.spin-left .dot { left:3px; top:50%; transform:translateY(-50%); }
+.spin-right .dot { right:3px; top:50%; transform:translateY(-50%); }
+.spin-center .dot { top:50%; left:50%; transform:translate(-50%,-50%); }
+
+#message { text-align:center; font-size:0.9rem; color:var(--gold); min-height:22px; font-weight:600; }
 #message.flash { animation:msgFlash 0.6s ease-out; }
 @keyframes msgFlash { 0%{transform:scale(1.2);color:#fff} 100%{transform:scale(1);color:var(--gold)} }
 
-/* Spin Control */
-#spin-control {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  max-width: 900px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-#spin-label { font-size:0.8rem; color:var(--text-dim); }
-.spin-btn {
-  width: 42px; height: 42px;
-  border-radius: 50%;
-  border: 2px solid rgba(255,255,255,0.2);
-  background: var(--panel);
-  color: var(--text);
-  cursor: pointer;
-  font-size: 1.1rem;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: inherit;
-  position: relative;
-}
-.spin-btn:hover { border-color: var(--gold); }
-.spin-btn.active { border-color: var(--gold); background: rgba(212,168,83,0.2); box-shadow: 0 0 12px rgba(212,168,83,0.3); }
-.spin-btn .dot { position:absolute; width:8px; height:8px; border-radius:50%; background:var(--gold); }
-.spin-top .dot { top:4px; left:50%; transform:translateX(-50%); }
-.spin-bottom .dot { bottom:4px; left:50%; transform:translateX(-50%); }
-.spin-left .dot { left:4px; top:50%; transform:translateY(-50%); }
-.spin-right .dot { right:4px; top:50%; transform:translateY(-50%); }
-.spin-center .dot { top:50%; left:50%; transform:translate(-50%,-50%); }
-
-/* Face Upload */
-#face-upload-area { display:none; flex-direction:column; align-items:center; gap:12px; padding:20px; background:var(--panel); border-radius:12px; box-shadow:var(--shadow); border:1px solid rgba(255,255,255,0.06); }
+#face-upload-area { display:none; flex-direction:column; align-items:center; gap:10px; padding:18px; background:var(--panel); border-radius:12px; box-shadow:0 4px 24px rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.06); }
 #face-upload-area h3 { color:var(--accent); }
-#face-preview { width:120px; height:120px; border-radius:50%; object-fit:cover; border:3px solid var(--accent); display:none; }
+#face-preview { width:110px; height:110px; border-radius:50%; object-fit:cover; border:3px solid var(--accent); display:none; }
 #face-input { display:none; }
-.upload-label { padding:12px 24px; background:var(--accent); color:#fff; border-radius:8px; cursor:pointer; font-weight:600; transition:all 0.2s; }
+.upload-label { padding:10px 22px; background:var(--accent); color:#fff; border-radius:8px; cursor:pointer; font-weight:600; transition:all 0.2s; }
 .upload-label:hover { filter:brightness(1.2); }
-
-.pocketed-row { display:flex; gap:4px; flex-wrap:wrap; align-items:center; }
-.pocketed-dot { width:16px; height:16px; border-radius:50%; border:1px solid rgba(255,255,255,0.3); transition:all 0.3s; }
+.pocketed-dot { width:14px; height:14px; border-radius:50%; border:1px solid rgba(255,255,255,0.3); display:inline-block; vertical-align:middle; margin:0 1px; }
 
 @media (max-width:600px) {
-  h1 { font-size:1.3rem; }
+  h1 { font-size:1.2rem; }
   .mode-grid { grid-template-columns:1fr; }
-  #menu { min-width:unset; padding:24px 16px; }
-  #game-header { padding:6px 10px; gap:6px; }
-  #game-header .info { font-size:0.78rem; gap:6px; }
-  .btn { padding:6px 12px; font-size:0.78rem; }
+  #menu { min-width:unset; padding:24px 14px; }
+  #game-header { padding:5px 8px; gap:5px; }
+  #game-header .info { font-size:0.72rem; gap:5px; }
+  .btn { padding:5px 10px; font-size:0.7rem; }
   #pocket-display { display:none; }
-  .spin-btn { width:36px; height:36px; font-size:0.9rem; }
+  .spin-btn { width:32px; height:32px; font-size:0.85rem; }
 }
 </style>
 </head>
 <body>
-
 <div id="app">
   <h1>🎱 8球台球 <span>Pool 8-Ball</span></h1>
 
@@ -147,9 +121,9 @@ canvas { border-radius:12px; box-shadow:var(--shadow); cursor:crosshair; max-wid
     <img id="face-preview" alt="预览">
     <input type="file" id="face-input" accept="image/*" onchange="handleFaceUpload(event)">
     <label class="upload-label" for="face-input">📷 选择照片</label>
-    <div id="bad-guy-mode-select" style="display:none;flex-direction:column;align-items:center;gap:12px;width:100%;">
-      <p style="color:var(--gold);font-weight:600;">照片已就绪！选择模式：</p>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+    <div id="bad-guy-mode-select" style="display:none;flex-direction:column;align-items:center;gap:10px;width:100%;">
+      <p style="color:var(--gold);font-weight:600;">照片已就绪！</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">
         <button class="mode-btn" onclick="startGame('badguy-solo')" style="grid-column:unset;"><span class="icon">💀</span><span class="label">单人暴击</span></button>
         <button class="mode-btn" onclick="startGame('badguy-duo')" style="grid-column:unset;"><span class="icon">💀👥</span><span class="label">双人暴击</span></button>
       </div>
@@ -164,897 +138,429 @@ canvas { border-radius:12px; box-shadow:var(--shadow); cursor:crosshair; max-wid
         <span id="score">🎱 剩余: 16</span>
         <span id="pocket-display"></span>
       </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
         <button class="btn gold" onclick="resetGame()">🔄 重新开始</button>
         <button class="btn back" onclick="backToMenu()">🏠 菜单</button>
       </div>
     </div>
-    <canvas id="game-canvas" width="900" height="500"></canvas>
-
-    <!-- Spin Control -->
-    <div id="spin-control">
-      <span id="spin-label">🎯 旋转:</span>
-      <button class="spin-btn spin-top" data-spin="top" onclick="setSpin('top')" title="前旋 (Follow)"><span>↑</span><span class="dot"></span></button>
-      <button class="spin-btn spin-bottom" data-spin="bottom" onclick="setSpin('bottom')" title="下旋 (Draw)"><span>↓</span><span class="dot"></span></button>
-      <button class="spin-btn spin-left" data-spin="left" onclick="setSpin('left')" title="左旋 (Left)"><span>←</span><span class="dot"></span></button>
-      <button class="spin-btn spin-right" data-spin="right" onclick="setSpin('right')" title="右旋 (Right)"><span>→</span><span class="dot"></span></button>
-      <button class="spin-btn spin-center active" data-spin="center" onclick="setSpin('center')" title="无旋 (Center)"><span>⊙</span><span class="dot"></span></button>
+    <div id="canvas-wrap">
+      <canvas id="game-canvas" width="900" height="500"></canvas>
     </div>
 
-    <div id="power-bar-container"><div id="power-bar"></div></div>
-    <div id="message">拖动鼠标瞄准，按住蓄力后释放击球！</div>
+    <div id="spin-control">
+      <span id="spin-label">🎯 旋转:</span>
+      <button class="spin-btn spin-top" data-spin="top" onclick="setSpin('top')" title="前旋↑"><span>↑</span><span class="dot"></span></button>
+      <button class="spin-btn spin-bottom" data-spin="bottom" onclick="setSpin('bottom')" title="下旋↓"><span>↓</span><span class="dot"></span></button>
+      <button class="spin-btn spin-left" data-spin="left" onclick="setSpin('left')" title="左旋←"><span>←</span><span class="dot"></span></button>
+      <button class="spin-btn spin-right" data-spin="right" onclick="setSpin('right')" title="右旋→"><span>→</span><span class="dot"></span></button>
+      <button class="spin-btn spin-center active" data-spin="center" onclick="setSpin('center')" title="无旋⊙"><span>⊙</span><span class="dot"></span></button>
+    </div>
+
+    <div id="message">移动鼠标瞄准方向，按住白球向后拉杆控制力度！</div>
   </div>
 </div>
 
 <script>
-// ==================== 音效引擎 ====================
+// ==================== 音效 ====================
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
 let audioCtx = null;
 function ensureAudio() { if (!audioCtx) audioCtx = new AudioCtx(); return audioCtx; }
-function playSound(freq, type, duration, vol = 0.1, decay = true) {
-  try {
-    const ctx = ensureAudio();
-    const osc = ctx.createOscillator(); const gain = ctx.createGain();
-    osc.type = type; osc.frequency.setValueAtTime(freq, ctx.currentTime);
-    gain.gain.setValueAtTime(vol, ctx.currentTime);
-    if (decay) gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
-    osc.connect(gain); gain.connect(ctx.destination);
-    osc.start(ctx.currentTime); osc.stop(ctx.currentTime + duration);
-  } catch(e) {}
+function playSound(freq, type, dur, vol=0.1) {
+  try { const c=ensureAudio(); const o=c.createOscillator(); const g=c.createGain();
+    o.type=type; o.frequency.setValueAtTime(freq,c.currentTime);
+    g.gain.setValueAtTime(vol,c.currentTime); g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+dur);
+    o.connect(g); g.connect(c.destination); o.start(c.currentTime); o.stop(c.currentTime+dur); } catch(e){}
 }
-function sfxHit() { playSound(200, 'triangle', 0.08, 0.15); }
-function sfxPocket() { playSound(500, 'sine', 0.2, 0.12); setTimeout(() => playSound(800, 'sine', 0.15, 0.1), 100); }
-function sfxCushion() { playSound(120, 'square', 0.06, 0.05); }
-function sfxWin() { playSound(523, 'sine', 0.15, 0.3); setTimeout(() => playSound(659, 'sine', 0.15, 0.3), 150); setTimeout(() => playSound(784, 'sine', 0.2, 0.5), 300); }
+function sfxHit() { playSound(200,'triangle',0.08,0.15); }
+function sfxPocket() { playSound(500,'sine',0.2,0.12); setTimeout(()=>playSound(800,'sine',0.15,0.1),100); }
+function sfxCushion() { playSound(120,'square',0.06,0.05); }
+function sfxWin() { playSound(523,'sine',0.15,0.3); setTimeout(()=>playSound(659,'sine',0.15,0.3),150); setTimeout(()=>playSound(784,'sine',0.2,0.5),300); }
 
-// ==================== 游戏引擎 ====================
+// ==================== 常量 ====================
 const canvas = document.getElementById('game-canvas');
 const ctx = canvas.getContext('2d');
-function resizeCanvas() {
-  const maxW = Math.min(window.innerWidth - 20, 900);
-  canvas.style.width = maxW + 'px';
-  canvas.style.height = (500 * maxW / 900) + 'px';
-}
-resizeCanvas(); window.addEventListener('resize', resizeCanvas);
+function resizeCanvas() { const mw=Math.min(window.innerWidth-20,900); canvas.style.width=mw+'px'; canvas.style.height=(500*mw/900)+'px'; }
+resizeCanvas(); window.addEventListener('resize',resizeCanvas);
 
-const TABLE_W = 900, TABLE_H = 500;
-const TABLE_MARGIN = 50;
-const POCKET_R = 18, BALL_R = 12;
-const FRICTION = 0.985, SPIN_FRICTION = 0.97;
-const MIN_SPEED = 0.12;
-const MAX_POWER = 24;
-
+const TW=900, TH=500, TM=50, PR=18, BR=12;
+const FR=0.985, SF=0.97, MS=0.12, MP=24;
 const pockets = [
-  {x: TABLE_MARGIN, y: TABLE_MARGIN},
-  {x: TABLE_W/2, y: TABLE_MARGIN - 6},
-  {x: TABLE_W - TABLE_MARGIN, y: TABLE_MARGIN},
-  {x: TABLE_MARGIN, y: TABLE_H - TABLE_MARGIN},
-  {x: TABLE_W/2, y: TABLE_H - TABLE_MARGIN + 6},
-  {x: TABLE_W - TABLE_MARGIN, y: TABLE_H - TABLE_MARGIN},
+  {x:TM,y:TM},{x:TW/2,y:TM-6},{x:TW-TM,y:TM},
+  {x:TM,y:TH-TM},{x:TW/2,y:TH-TM+6},{x:TW-TM,y:TH-TM},
 ];
 
 class Ball {
-  constructor(x, y, number, color, isCue = false) {
-    this.x = x; this.y = y;
-    this.vx = 0; this.vy = 0;
-    this.spinX = 0; this.spinY = 0; // 自旋向量 (用于旋转效果)
-    this.r = BALL_R; this.number = number;
-    this.color = color; this.isCue = isCue;
-    this.pocketed = false; this.faceImg = null;
-    this.rotation = 0;
+  constructor(x,y,num,color,isCue=false) {
+    this.x=x; this.y=y; this.vx=0; this.vy=0; this.spinX=0; this.spinY=0;
+    this.r=BR; this.number=num; this.color=color; this.isCue=isCue;
+    this.pocketed=false; this.faceImg=null; this.rotation=0;
   }
-  get speed() { return Math.sqrt(this.vx*this.vx + this.vy*this.vy); }
-  get spinMag() { return Math.sqrt(this.spinX*this.spinX + this.spinY*this.spinY); }
+  get speed() { return Math.hypot(this.vx,this.vy); }
+  get spinMag() { return Math.hypot(this.spinX,this.spinY); }
 }
+const BC = { 0:'#f8f8f8', 1:'#f4d03f',2:'#2c3e99',3:'#e74c3c',4:'#8e44ad',5:'#e67e22',6:'#1abc5c',7:'#8b0000',8:'#111', 9:'#f4d03f',10:'#2c3e99',11:'#e74c3c',12:'#8e44ad',13:'#e67e22',14:'#1abc5c',15:'#8b0000' };
 
-const BALL_COLORS = {
-  0:'#f8f8f8', 1:'#f4d03f', 2:'#2c3e99', 3:'#e74c3c', 4:'#8e44ad',
-  5:'#e67e22', 6:'#1abc5c', 7:'#8b0000', 8:'#111',
-  9:'#f4d03f', 10:'#2c3e99', 11:'#e74c3c',
-  12:'#8e44ad', 13:'#e67e22', 14:'#1abc5c', 15:'#8b0000',
-};
+// ==================== 状态 ====================
+let gm=null, balls=[], cue=null, cp=1, p1t=null, p2t=null, ta=false;
+let phase='aim'; // aim | pull | shoot | over
+let aimA=0, power=0, mouseX=0, mouseY=0;
+let mDown=false, shot=false, badFace=null, aiTh=false;
+let ghosts=[], msgTO=null, spin='center';
+const SFORCE=0.08;
 
-let gameMode = null, balls = [], cueBall = null;
-let currentPlayer = 1;
-let player1Type = null, player2Type = null, typesAssigned = false;
-let gamePhase = 'aiming';
-let aimAngle = 0, powerLevel = 0, powerIncreasing = true;
-let mouseX = 0, mouseY = 0, mouseDown = false;
-let shotInProgress = false;
-let badGuyFace = null;
-let messageTimeout = null;
-let aiThinking = false;
-let ghostBalls = [];
+function setSpin(t) { spin=t; document.querySelectorAll('.spin-btn').forEach(b=>b.classList.remove('active')); const btn=document.querySelector(`[data-spin="${t}"]`); if(btn) btn.classList.add('active'); }
 
-// 旋转状态: 'center'|'top'|'bottom'|'left'|'right'
-let currentSpin = 'center';
-const SPIN_FORCE = 0.08; // 旋转对轨迹的影响系数
-
-function setSpin(type) {
-  currentSpin = type;
-  document.querySelectorAll('.spin-btn').forEach(b => b.classList.remove('active'));
-  const btn = document.querySelector(`[data-spin="${type}"]`);
-  if (btn) btn.classList.add('active');
-}
-
+// ==================== 球初始化 ====================
 function initBalls() {
-  balls = [];
-  cueBall = new Ball(TABLE_W * 0.25, TABLE_H / 2, 0, '#f8f8f8', true);
-  balls.push(cueBall);
+  balls=[]; cue=new Ball(TW*0.25,TH/2,0,'#f8f8f8',true); balls.push(cue);
+  const rx=TW*0.72, ry=TH/2, sp=BR*2+1.5;
+  const ord=[1,9,2,10,8,11,3,12,6,13,14,4,15,7,5]; let idx=0;
+  for(let r=0;r<5;r++) for(let c=0;c<=r;c++) { const n=ord[idx++]; balls.push(new Ball(rx+r*sp*Math.cos(Math.PI/6),ry+(c-r/2)*sp,n,BC[n])); }
+  if(badFace&&(gm==='badguy-solo'||gm==='badguy-duo')) { const nc=balls.filter(b=>!b.isCue); [...nc].sort(()=>Math.random()-0.5).slice(0,Math.min(6,nc.length)).forEach(b=>b.faceImg=badFace); }
+}
+function gSC() { return balls.filter(b=>!b.isCue&&!b.pocketed&&b.number>=1&&b.number<=7).length; }
+function gStC() { return balls.filter(b=>!b.isCue&&!b.pocketed&&b.number>=9&&b.number<=15).length; }
+function gPS() { return balls.filter(b=>!b.isCue&&b.pocketed&&b.number>=1&&b.number<=7); }
+function gPSt() { return balls.filter(b=>!b.isCue&&b.pocketed&&b.number>=9&&b.number<=15); }
 
-  const rackX = TABLE_W * 0.72, rackY = TABLE_H / 2;
-  const spacing = BALL_R * 2 + 1.5;
-  const rackOrder = [1, 9, 2, 10, 8, 11, 3, 12, 6, 13, 14, 4, 15, 7, 5];
-  let idx = 0;
-  for (let row = 0; row < 5; row++) {
-    for (let col = 0; col <= row; col++) {
-      const num = rackOrder[idx++];
-      const x = rackX + row * spacing * Math.cos(Math.PI/6);
-      const y = rackY + (col - row/2) * spacing;
-      balls.push(new Ball(x, y, num, BALL_COLORS[num]));
-    }
-  }
-  if (badGuyFace && (gameMode === 'badguy-solo' || gameMode === 'badguy-duo')) {
-    const nonCue = balls.filter(b => !b.isCue);
-    const fc = Math.min(6, nonCue.length);
-    [...nonCue].sort(() => Math.random() - 0.5).slice(0, fc).forEach(b => b.faceImg = badGuyFace);
-  }
+function upScore() {
+  const t=balls.filter(b=>!b.pocketed&&!b.isCue).length;
+  document.getElementById('score').textContent=`🎱 剩余: ${t}`;
+  if(gm&&gm!=='basic') { const s=gPS(),st=gPSt(); let h='';
+    if(p1t==='solid'||(ta&&p1t==='solid')) { h+=`<span style="color:#e94560">P1实:</span>${s.map(b=>`<span class="pocketed-dot" style="background:${b.color}"></span>`).join('')} `; h+=`<span style="color:#3b82f6">P2花:</span>${st.map(b=>`<span class="pocketed-dot" style="background:${b.color}"></span>`).join('')}`; }
+    else if(p1t==='stripe') { h+=`<span style="color:#e94560">P1花:</span>${st.map(b=>`<span class="pocketed-dot" style="background:${b.color}"></span>`).join('')} `; h+=`<span style="color:#3b82f6">P2实:</span>${s.map(b=>`<span class="pocketed-dot" style="background:${b.color}"></span>`).join('')}`; }
+    document.getElementById('pocket-display').innerHTML=h||''; }
+}
+function setMsg(m,d=2000) { const el=document.getElementById('message'); el.textContent=m; el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); if(msgTO) clearTimeout(msgTO); if(d>0) msgTO=setTimeout(()=>{el.textContent='';},d); }
+function upTurn() {
+  const el=document.getElementById('turn-indicator'); el.classList.remove('turn-p1','turn-p2','turn-ai');
+  if(cp===1) { const l=gm==='badguy-solo'?'你的回合':'玩家1回合'; el.textContent=l+(p1t&&ta?(p1t==='solid'?' (实心)':' (花色)'):''); el.classList.add('turn-p1'); }
+  else { if(gm==='ai') { el.textContent='🤖 AI思考中...'; el.classList.add('turn-ai'); }
+    else if(gm==='badguy-solo') { el.textContent='继续击球'; el.classList.add('turn-p1'); }
+    else { const l='玩家2回合'; el.textContent=l+(p2t&&ta?(p2t==='solid'?' (实心)':' (花色)'):''); el.classList.add('turn-p2'); } }
 }
 
-function getSolidCount() { return balls.filter(b => !b.isCue && !b.pocketed && b.number >= 1 && b.number <= 7).length; }
-function getStripeCount() { return balls.filter(b => !b.isCue && !b.pocketed && b.number >= 9 && b.number <= 15).length; }
-function getPocketedSolids() { return balls.filter(b => !b.isCue && b.pocketed && b.number >= 1 && b.number <= 7); }
-function getPocketedStripes() { return balls.filter(b => !b.isCue && b.pocketed && b.number >= 9 && b.number <= 15); }
-
-function updateScore() {
-  const total = balls.filter(b => !b.pocketed && !b.isCue).length;
-  document.getElementById('score').textContent = `🎱 剩余: ${total}`;
-  if (gameMode && gameMode !== 'basic') {
-    const solids = getPocketedSolids(), stripes = getPocketedStripes();
-    let html = '';
-    if (player1Type === 'solid' || (typesAssigned && player1Type === 'solid')) {
-      html += `<span style="color:#e94560">P1实:</span>${solids.map(b=>`<span class="pocketed-dot" style="background:${b.color}"></span>`).join('')} `;
-      html += `<span style="color:#3b82f6">P2花:</span>${stripes.map(b=>`<span class="pocketed-dot" style="background:${b.color}"></span>`).join('')}`;
-    } else if (player1Type === 'stripe') {
-      html += `<span style="color:#e94560">P1花:</span>${stripes.map(b=>`<span class="pocketed-dot" style="background:${b.color}"></span>`).join('')} `;
-      html += `<span style="color:#3b82f6">P2实:</span>${solids.map(b=>`<span class="pocketed-dot" style="background:${b.color}"></span>`).join('')}`;
-    }
-    document.getElementById('pocket-display').innerHTML = html || '';
+// ==================== 物理 ====================
+function upPhys() {
+  let as=true;
+  for(const b of balls) {
+    if(b.pocketed) continue;
+    b.spinX*=SF; b.spinY*=SF;
+    if(b.speed<MS&&b.spinMag<0.01) { b.vx=0; b.vy=0; b.spinX=0; b.spinY=0; continue; }
+    as=false;
+    if(b.spinMag>0.005&&b.speed>0.2) { const s=b.speed, ux=b.vx/s, uy=b.vy/s; b.vx+=b.spinY*SFORCE; b.vy-=b.spinX*SFORCE; }
+    b.x+=b.vx; b.y+=b.vy; b.rotation+=b.speed*0.02; b.vx*=FR; b.vy*=FR;
+    if(b.x-b.r<TM) { b.x=TM+b.r; b.vx=Math.abs(b.vx)*0.7; b.spinX*=-0.5; sfxCushion(); }
+    if(b.x+b.r>TW-TM) { b.x=TW-TM-b.r; b.vx=-Math.abs(b.vx)*0.7; b.spinX*=-0.5; sfxCushion(); }
+    if(b.y-b.r<TM) { b.y=TM+b.r; b.vy=Math.abs(b.vy)*0.7; b.spinY*=-0.5; sfxCushion(); }
+    if(b.y+b.r>TH-TM) { b.y=TH-TM-b.r; b.vy=-Math.abs(b.vy)*0.7; b.spinY*=-0.5; sfxCushion(); }
   }
+  for(let i=0;i<balls.length;i++) { if(balls[i].pocketed) continue;
+    for(let j=i+1;j<balls.length;j++) { if(balls[j].pocketed) continue;
+      const a=balls[i],b=balls[j],dx=b.x-a.x,dy=b.y-a.y,dist=Math.hypot(dx,dy),md=a.r+b.r;
+      if(dist<md&&dist>0.001) { const nx=dx/dist,ny=dy/dist,ov=md-dist; a.x-=nx*ov/2; a.y-=ny*ov/2; b.x+=nx*ov/2; b.y+=ny*ov/2;
+        const dvx=a.vx-b.vx,dvy=a.vy-b.vy,dvn=dvx*nx+dvy*ny; if(dvn>0) { a.vx-=dvn*nx; a.vy-=dvn*ny; b.vx+=dvn*nx; b.vy+=dvn*ny; }
+        const tx=-ny,ty=nx,ast=a.spinX*tx+a.spinY*ty,bst=b.spinX*tx+b.spinY*ty,stt=0.3;
+        a.vx+=tx*ast*stt; a.vy+=ty*ast*stt; b.vx-=tx*bst*stt; b.vy-=ty*bst*stt;
+        const rst=(dvx*tx+dvy*ty); a.spinX-=tx*rst*0.02; a.spinY-=ty*rst*0.02; b.spinX+=tx*rst*0.02; b.spinY+=ty*rst*0.02;
+        as=false; sfxHit(); } } }
+  for(const b of balls) { if(b.pocketed) continue;
+    for(const p of pockets) { if(Math.hypot(b.x-p.x,b.y-p.y)<PR-2) { b.pocketed=true; b.vx=0; b.vy=0; b.spinX=0; b.spinY=0; sfxPocket(); break; } } }
+  return as;
 }
 
-function setMessage(msg, duration = 2000) {
-  const el = document.getElementById('message');
-  el.textContent = msg; el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
-  if (messageTimeout) clearTimeout(messageTimeout);
-  if (duration > 0) messageTimeout = setTimeout(() => { el.textContent = ''; }, duration);
-}
-
-function updateTurnIndicator() {
-  const el = document.getElementById('turn-indicator');
-  el.classList.remove('turn-p1', 'turn-p2', 'turn-ai');
-  if (currentPlayer === 1) {
-    const label = (gameMode === 'badguy-solo') ? '你的回合' : '玩家1回合';
-    el.textContent = label + (player1Type && typesAssigned ? (player1Type === 'solid' ? ' (实心)' : ' (花色)') : '');
-    el.classList.add('turn-p1');
-  } else {
-    if (gameMode === 'ai') { el.textContent = '🤖 AI思考中...'; el.classList.add('turn-ai'); }
-    else if (gameMode === 'badguy-solo') { el.textContent = '继续击球'; el.classList.add('turn-p1'); }
-    else {
-      const label = '玩家2回合';
-      el.textContent = label + (player2Type && typesAssigned ? (player2Type === 'solid' ? ' (实心)' : ' (花色)') : '');
-      el.classList.add('turn-p2');
-    }
-  }
-}
-
-// ==================== 物理引擎（含旋转） ====================
-function updatePhysics() {
-  let allSettled = true;
-
-  for (const ball of balls) {
-    if (ball.pocketed) continue;
-
-    // 自旋衰减
-    ball.spinX *= SPIN_FRICTION;
-    ball.spinY *= SPIN_FRICTION;
-
-    if (ball.speed < MIN_SPEED && ball.spinMag < 0.01) {
-      ball.vx = 0; ball.vy = 0;
-      ball.spinX = 0; ball.spinY = 0;
-      continue;
-    }
-    allSettled = false;
-
-    // 旋转对运动的影响：Magnus效应简化 —— 自旋会偏转运动方向
-    if (ball.spinMag > 0.005 && ball.speed > 0.2) {
-      // 自旋产生垂直于运动方向的力
-      const speed = ball.speed;
-      const ux = ball.vx / speed, uy = ball.vy / speed;
-      // 自旋叉积效应
-      ball.vx += ball.spinY * SPIN_FORCE;
-      ball.vy -= ball.spinX * SPIN_FORCE;
-    }
-
-    ball.x += ball.vx;
-    ball.y += ball.vy;
-    ball.rotation += ball.speed * 0.02;
-    ball.vx *= FRICTION;
-    ball.vy *= FRICTION;
-
-    // 桌边反弹（含旋转影响）
-    const margin = TABLE_MARGIN;
-    if (ball.x - ball.r < margin) {
-      ball.x = margin + ball.r;
-      ball.vx = Math.abs(ball.vx) * 0.7;
-      ball.spinX *= -0.5; // 旋转方向反转
-      sfxCushion();
-    }
-    if (ball.x + ball.r > TABLE_W - margin) {
-      ball.x = TABLE_W - margin - ball.r;
-      ball.vx = -Math.abs(ball.vx) * 0.7;
-      ball.spinX *= -0.5;
-      sfxCushion();
-    }
-    if (ball.y - ball.r < margin) {
-      ball.y = margin + ball.r;
-      ball.vy = Math.abs(ball.vy) * 0.7;
-      ball.spinY *= -0.5;
-      sfxCushion();
-    }
-    if (ball.y + ball.r > TABLE_H - margin) {
-      ball.y = TABLE_H - margin - ball.r;
-      ball.vy = -Math.abs(ball.vy) * 0.7;
-      ball.spinY *= -0.5;
-      sfxCushion();
-    }
-  }
-
-  // 球间碰撞（含旋转传递）
-  for (let i = 0; i < balls.length; i++) {
-    if (balls[i].pocketed) continue;
-    for (let j = i + 1; j < balls.length; j++) {
-      if (balls[j].pocketed) continue;
-      const a = balls[i], b = balls[j];
-      const dx = b.x - a.x, dy = b.y - a.y;
-      const dist = Math.sqrt(dx*dx + dy*dy);
-      const minDist = a.r + b.r;
-      if (dist < minDist && dist > 0.001) {
-        const nx = dx / dist, ny = dy / dist;
-        const overlap = minDist - dist;
-        a.x -= nx * overlap / 2; a.y -= ny * overlap / 2;
-        b.x += nx * overlap / 2; b.y += ny * overlap / 2;
-
-        const dvx = a.vx - b.vx, dvy = a.vy - b.vy;
-        const dvDotN = dvx * nx + dvy * ny;
-        if (dvDotN > 0) {
-          a.vx -= dvDotN * nx; a.vy -= dvDotN * ny;
-          b.vx += dvDotN * nx; b.vy += dvDotN * ny;
-        }
-
-        // 旋转传递：碰撞时自旋影响碰撞后的速度方向
-        const tangentX = -ny, tangentY = nx;
-        const aSpinTan = a.spinX * tangentX + a.spinY * tangentY;
-        const bSpinTan = b.spinX * tangentX + b.spinY * tangentY;
-        const spinTransfer = 0.3;
-        a.vx += tangentX * aSpinTan * spinTransfer;
-        a.vy += tangentY * aSpinTan * spinTransfer;
-        b.vx -= tangentX * bSpinTan * spinTransfer;
-        b.vy -= tangentY * bSpinTan * spinTransfer;
-
-        // 碰撞产生新自旋
-        const relSpeedTan = (dvx * tangentX + dvy * tangentY);
-        a.spinX -= tangentX * relSpeedTan * 0.02;
-        a.spinY -= tangentY * relSpeedTan * 0.02;
-        b.spinX += tangentX * relSpeedTan * 0.02;
-        b.spinY += tangentY * relSpeedTan * 0.02;
-
-        allSettled = false;
-        sfxHit();
-      }
-    }
-  }
-
-  // 进球
-  for (const ball of balls) {
-    if (ball.pocketed) continue;
-    for (const pocket of pockets) {
-      if (Math.hypot(ball.x - pocket.x, ball.y - pocket.y) < POCKET_R - 2) {
-        ball.pocketed = true; ball.vx = 0; ball.vy = 0;
-        ball.spinX = 0; ball.spinY = 0;
-        sfxPocket(); break;
-      }
-    }
-  }
-  return allSettled;
-}
-
-function predictTrajectory() {
-  ghostBalls = [];
-  const step = 15;
-  let px = cueBall.x, py = cueBall.y;
-  let vx = Math.cos(aimAngle) * MAX_POWER * 0.5;
-  let vy = Math.sin(aimAngle) * MAX_POWER * 0.5;
-  for (let i = 0; i < 300; i++) {
-    px += vx; py += vy;
-    vx *= FRICTION; vy *= FRICTION;
-    if (i % step === 0 && px > TABLE_MARGIN + BALL_R && px < TABLE_W - TABLE_MARGIN - BALL_R && py > TABLE_MARGIN + BALL_R && py < TABLE_H - TABLE_MARGIN - BALL_R) {
-      ghostBalls.push({x: px, y: py});
-    }
-    if (Math.hypot(vx, vy) < 0.05) break;
-  }
+function predict() {
+  ghosts=[]; const st=15; let px=cue.x,py=cue.y; let vx=Math.cos(aimA)*MP*0.5,vy=Math.sin(aimA)*MP*0.5;
+  for(let i=0;i<300;i++) { px+=vx; py+=vy; vx*=FR; vy*=FR; if(i%st===0&&px>TM+BR&&px<TW-TM-BR&&py>TM+BR&&py<TH-TM-BR) ghosts.push({x:px,y:py}); if(Math.hypot(vx,vy)<0.05) break; }
 }
 
 // ==================== 渲染 ====================
 function drawTable() {
-  const grad = ctx.createLinearGradient(0, 0, TABLE_W, TABLE_H);
-  grad.addColorStop(0, '#1a8a4a'); grad.addColorStop(0.5, '#0d7a3e'); grad.addColorStop(1, '#0a5c2f');
-  ctx.fillStyle = grad; ctx.fillRect(0, 0, TABLE_W, TABLE_H);
-
-  ctx.strokeStyle = '#4a1a0a'; ctx.lineWidth = TABLE_MARGIN;
-  ctx.strokeRect(TABLE_MARGIN/2, TABLE_MARGIN/2, TABLE_W - TABLE_MARGIN, TABLE_H - TABLE_MARGIN);
-
-  ctx.strokeStyle = '#7a4a2a'; ctx.lineWidth = 3;
-  ctx.strokeRect(TABLE_MARGIN, TABLE_MARGIN, TABLE_W - TABLE_MARGIN*2, TABLE_H - TABLE_MARGIN*2);
-
-  for (const p of pockets) {
-    ctx.beginPath(); ctx.arc(p.x, p.y, POCKET_R, 0, Math.PI*2);
-    ctx.fillStyle = '#0a0a0a'; ctx.fill();
-    ctx.beginPath(); ctx.arc(p.x, p.y, POCKET_R - 2, 0, Math.PI*2);
-    ctx.fillStyle = '#111'; ctx.fill();
-  }
-
-  ctx.setLineDash([6, 8]);
-  ctx.strokeStyle = 'rgba(255,255,255,0.12)'; ctx.lineWidth = 1;
-  ctx.beginPath(); ctx.moveTo(TABLE_W*0.25, TABLE_MARGIN); ctx.lineTo(TABLE_W*0.25, TABLE_H-TABLE_MARGIN); ctx.stroke();
-  ctx.setLineDash([]);
-
-  ctx.beginPath(); ctx.arc(TABLE_W/2, TABLE_H/2, 4, 0, Math.PI*2);
-  ctx.fillStyle = 'rgba(255,255,255,0.15)'; ctx.fill();
-  ctx.beginPath(); ctx.arc(TABLE_W*0.25, TABLE_H/2, TABLE_H*0.15, -Math.PI/3, Math.PI/3);
-  ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 1; ctx.stroke();
+  const g=ctx.createLinearGradient(0,0,TW,TH); g.addColorStop(0,'#1a8a4a'); g.addColorStop(0.5,'#0d7a3e'); g.addColorStop(1,'#0a5c2f'); ctx.fillStyle=g; ctx.fillRect(0,0,TW,TH);
+  ctx.strokeStyle='#4a1a0a'; ctx.lineWidth=TM; ctx.strokeRect(TM/2,TM/2,TW-TM,TH-TM);
+  ctx.strokeStyle='#7a4a2a'; ctx.lineWidth=3; ctx.strokeRect(TM,TM,TW-TM*2,TH-TM*2);
+  for(const p of pockets) { ctx.beginPath(); ctx.arc(p.x,p.y,PR,0,Math.PI*2); ctx.fillStyle='#0a0a0a'; ctx.fill(); ctx.beginPath(); ctx.arc(p.x,p.y,PR-2,0,Math.PI*2); ctx.fillStyle='#111'; ctx.fill(); }
+  ctx.setLineDash([6,8]); ctx.strokeStyle='rgba(255,255,255,0.12)'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(TW*0.25,TM); ctx.lineTo(TW*0.25,TH-TM); ctx.stroke(); ctx.setLineDash([]);
+  ctx.beginPath(); ctx.arc(TW/2,TH/2,4,0,Math.PI*2); ctx.fillStyle='rgba(255,255,255,0.15)'; ctx.fill();
+  ctx.beginPath(); ctx.arc(TW*0.25,TH/2,TH*0.15,-Math.PI/3,Math.PI/3); ctx.strokeStyle='rgba(255,255,255,0.1)'; ctx.lineWidth=1; ctx.stroke();
 }
 
-function drawBall(ball) {
-  if (ball.pocketed) return;
-  ctx.save();
-  ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI*2); ctx.clip();
-
-  if (ball.faceImg && ball.faceImg.complete && ball.faceImg.naturalWidth > 0) {
-    const s = ball.r * 2 + 1;
-    ctx.drawImage(ball.faceImg, ball.x - ball.r - 0.5, ball.y - ball.r - 0.5, s, s);
-    ctx.strokeStyle = '#ff3333'; ctx.lineWidth = 2.5;
-    ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.r - 1, 0, Math.PI*2); ctx.stroke();
-    ctx.fillStyle = 'rgba(255,0,0,0.15)';
-    ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI*2); ctx.fill();
-  } else {
-    const grad = ctx.createRadialGradient(ball.x-ball.r*0.3, ball.y-ball.r*0.3, ball.r*0.05, ball.x, ball.y, ball.r);
-    if (ball.isCue) { grad.addColorStop(0,'#ffffff'); grad.addColorStop(0.7,'#e8e8e8'); grad.addColorStop(1,'#cccccc'); }
-    else if (ball.number===8) { grad.addColorStop(0,'#444'); grad.addColorStop(1,'#000'); }
-    else { grad.addColorStop(0, lightenColor(ball.color,45)); grad.addColorStop(0.6, ball.color); grad.addColorStop(1, darkenColor(ball.color,30)); }
-    ctx.fillStyle = grad; ctx.fill();
-
-    ctx.beginPath(); ctx.arc(ball.x-ball.r*0.3, ball.y-ball.r*0.3, ball.r*0.3, 0, Math.PI*2);
-    ctx.fillStyle = 'rgba(255,255,255,0.35)'; ctx.fill();
-
-    if (!ball.isCue) {
-      ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.r*0.52, 0, Math.PI*2);
-      ctx.fillStyle = '#fff'; ctx.fill();
-      ctx.fillStyle = '#000'; ctx.font = `bold ${ball.r*0.72}px "Segoe UI", system-ui`;
-      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.fillText(ball.number, ball.x, ball.y + 0.5);
-    }
-    ctx.strokeStyle = 'rgba(0,0,0,0.2)'; ctx.lineWidth = 0.5;
-    ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.r-0.5, 0, Math.PI*2); ctx.stroke();
-  }
-
-  // 自旋指示器（白球上显示旋转方向）
-  if (ball.isCue && ball.spinMag > 0.01 && gamePhase === 'shooting') {
-    const sx = ball.spinX / ball.spinMag, sy = ball.spinY / ball.spinMag;
-    ctx.strokeStyle = 'rgba(255,200,50,0.6)'; ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.arc(ball.x, ball.y, ball.r * 0.7, Math.atan2(sy, sx) + ball.rotation, Math.atan2(sy, sx) + ball.rotation + Math.PI * 1.5);
-    ctx.stroke();
-    // 箭头
-    const a = Math.atan2(sy, sx) + ball.rotation + Math.PI * 1.5;
-    const ax = ball.x + Math.cos(a) * ball.r * 0.7, ay = ball.y + Math.sin(a) * ball.r * 0.7;
-    ctx.beginPath();
-    ctx.moveTo(ax, ay);
-    ctx.lineTo(ax + Math.cos(a+2.5)*6, ay + Math.sin(a+2.5)*6);
-    ctx.lineTo(ax + Math.cos(a-2.5)*6, ay + Math.sin(a-2.5)*6);
-    ctx.closePath(); ctx.fillStyle = 'rgba(255,200,50,0.6)'; ctx.fill();
-  }
-
+function drawBall(b) {
+  if(b.pocketed) return; ctx.save(); ctx.beginPath(); ctx.arc(b.x,b.y,b.r,0,Math.PI*2); ctx.clip();
+  if(b.faceImg&&b.faceImg.complete&&b.faceImg.naturalWidth>0) { ctx.drawImage(b.faceImg,b.x-b.r-0.5,b.y-b.r-0.5,b.r*2+1,b.r*2+1); ctx.strokeStyle='#ff3333'; ctx.lineWidth=2.5; ctx.beginPath(); ctx.arc(b.x,b.y,b.r-1,0,Math.PI*2); ctx.stroke(); ctx.fillStyle='rgba(255,0,0,0.15)'; ctx.beginPath(); ctx.arc(b.x,b.y,b.r,0,Math.PI*2); ctx.fill(); }
+  else { const g=ctx.createRadialGradient(b.x-b.r*0.3,b.y-b.r*0.3,b.r*0.05,b.x,b.y,b.r);
+    if(b.isCue) { g.addColorStop(0,'#fff'); g.addColorStop(0.7,'#e8e8e8'); g.addColorStop(1,'#ccc'); }
+    else if(b.number===8) { g.addColorStop(0,'#444'); g.addColorStop(1,'#000'); }
+    else { g.addColorStop(0,lc(b.color,45)); g.addColorStop(0.6,b.color); g.addColorStop(1,dc(b.color,30)); }
+    ctx.fillStyle=g; ctx.fill(); ctx.beginPath(); ctx.arc(b.x-b.r*0.3,b.y-b.r*0.3,b.r*0.3,0,Math.PI*2); ctx.fillStyle='rgba(255,255,255,0.35)'; ctx.fill();
+    if(!b.isCue) { ctx.beginPath(); ctx.arc(b.x,b.y,b.r*0.52,0,Math.PI*2); ctx.fillStyle='#fff'; ctx.fill(); ctx.fillStyle='#000'; ctx.font=`bold ${b.r*0.72}px "Segoe UI",system-ui`; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(b.number,b.x,b.y+0.5); }
+    ctx.strokeStyle='rgba(0,0,0,0.2)'; ctx.lineWidth=0.5; ctx.beginPath(); ctx.arc(b.x,b.y,b.r-0.5,0,Math.PI*2); ctx.stroke(); }
+  // 自旋指示
+  if(b.isCue&&b.spinMag>0.01&&phase==='shoot') { const sx=b.spinX/b.spinMag,sy=b.spinY/b.spinMag; ctx.strokeStyle='rgba(255,200,50,0.6)'; ctx.lineWidth=1.5; ctx.beginPath(); ctx.arc(b.x,b.y,b.r*0.7,Math.atan2(sy,sx)+b.rotation,Math.atan2(sy,sx)+b.rotation+Math.PI*1.5); ctx.stroke(); const a=Math.atan2(sy,sx)+b.rotation+Math.PI*1.5,ax=b.x+Math.cos(a)*b.r*0.7,ay=b.y+Math.sin(a)*b.r*0.7; ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(ax+Math.cos(a+2.5)*6,ay+Math.sin(a+2.5)*6); ctx.lineTo(ax+Math.cos(a-2.5)*6,ay+Math.sin(a-2.5)*6); ctx.closePath(); ctx.fillStyle='rgba(255,200,50,0.6)'; ctx.fill(); }
   ctx.restore();
 }
 
+function drawCueStick() {
+  // 球杆始终可见（瞄准/拉杆阶段）
+  if(phase!=='aim'&&phase!=='pull') return;
+  if(gm==='ai'&&cp===2) return;
+  if(gm==='versus'&&cp===2) return;
+
+  // 旋转偏移
+  let ox=0,oy=0; const od=BR*0.55;
+  switch(spin) { case'top':oy=-od;break; case'bottom':oy=od;break; case'left':ox=-od;break; case'right':ox=od;break; }
+  const ca=Math.cos(aimA),sa=Math.sin(aimA);
+  const rOX=ox*ca-oy*sa, rOY=ox*sa+oy*ca;
+  const cX=cue.x+rOX, cY=cue.y+rOY;
+
+  // 拉杆后退量
+  const pullBack = (phase==='pull'&&mDown) ? power/MP * 120 : 0;
+
+  const totalLen=220+pullBack, tipGap=18+pullBack, shaftLen=140;
+  const tipX=cX-ca*tipGap, tipY=cY-sa*tipGap;
+  const backX=cX-ca*(tipGap+totalLen), backY=cY-sa*(tipGap+totalLen);
+  const jointX=cX-ca*(tipGap+shaftLen), jointY=cY-sa*(tipGap+shaftLen);
+  const px=-sa,py=ca;
+  const tipW=1.6,jointW=3.5,buttW=6.5,backW=5.0;
+
+  function seg(sh,x1,y1,w1,x2,y2,w2,col) {
+    ctx.fillStyle=sh?'rgba(0,0,0,0.25)':col; ctx.beginPath();
+    const so=sh?2:0;
+    ctx.moveTo(x1+px*w1+so,y1+py*w1+so); ctx.lineTo(x2+px*w2+so,y2+py*w2+so);
+    ctx.lineTo(x2-px*w2+so,y2-py*w2+so); ctx.lineTo(x1-px*w1+so,y1-py*w1+so); ctx.closePath(); ctx.fill();
+  }
+  seg(true,tipX,tipY,tipW,jointX,jointY,jointW,null);
+  seg(true,jointX,jointY,jointW,backX,backY,buttW,null);
+  const sg=ctx.createLinearGradient(tipX-ca*10,tipY-sa*10,jointX+ca*10,jointY+sa*10);
+  sg.addColorStop(0,'#f5e6c8'); sg.addColorStop(0.3,'#e6c99a'); sg.addColorStop(0.7,'#c8a06e'); sg.addColorStop(1,'#a47c48');
+  seg(false,tipX,tipY,tipW,jointX,jointY,jointW,sg);
+  ctx.strokeStyle='rgba(101,67,33,0.2)'; ctx.lineWidth=0.8;
+  for(let k=0.15;k<0.85;k+=0.18) { const mx=tipX+(jointX-tipX)*k,my=tipY+(jointY-tipY)*k,mw=tipW+(jointW-tipW)*k; ctx.beginPath(); ctx.moveTo(mx+px*mw*0.3,my+py*mw*0.3); ctx.lineTo(mx-px*mw*0.3,my-py*mw*0.3); ctx.stroke(); }
+  seg(false,jointX-ca*2,jointY-sa*2,jointW+0.5,jointX+ca*2,jointY+sa*2,jointW+0.5,'#b0b0b0');
+  const bg=ctx.createLinearGradient(jointX,jointY,backX,backY); bg.addColorStop(0,'#2a2a2a'); bg.addColorStop(0.5,'#111'); bg.addColorStop(1,'#050505');
+  seg(false,jointX+ca*2,jointY+sa*2,jointW+0.5,backX,backY,buttW,bg);
+  const ecX=backX-ca*8,ecY=backY-sa*8; seg(false,backX,backY,buttW,ecX,ecY,backW,'#888');
+  ctx.fillStyle='#aaa'; ctx.beginPath(); ctx.ellipse(ecX,ecY,backW,backW*0.4,aimA,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#f8e8c8'; ctx.beginPath(); ctx.ellipse(tipX,tipY,tipW,tipW*0.35,aimA,0,Math.PI*2); ctx.fill();
+  ctx.strokeStyle='rgba(0,0,0,0.2)'; ctx.lineWidth=0.5; ctx.stroke();
+
+  // 旋转击球点
+  if(spin!=='center') { ctx.beginPath(); ctx.arc(cX,cY,2.5,0,Math.PI*2); ctx.fillStyle='rgba(255,50,50,0.8)'; ctx.fill(); ctx.strokeStyle='rgba(255,255,255,0.6)'; ctx.lineWidth=1; ctx.stroke(); }
+}
+
+function drawPowerRing() {
+  // 拉杆时显示明显的弧形力度环
+  if(phase!=='pull'||!mDown) return;
+  const cx=cue.x, cy=cue.y;
+  const ringR=BR+8;
+  const pct=power/MP;
+
+  // 外环背景
+  ctx.beginPath(); ctx.arc(cx,cy,ringR,0,Math.PI*2); ctx.strokeStyle='rgba(255,255,255,0.15)'; ctx.lineWidth=4; ctx.stroke();
+
+  // 力度弧（从正上方顺时针）
+  const startA=-Math.PI/2;
+  const endA=startA+Math.PI*2*pct;
+  const grad=ctx.createConicalGradient?null:null; // fallback
+
+  // 分段颜色渐变
+  for(let i=0;i<Math.floor(pct*60);i++) {
+    const a1=startA+(i/60)*Math.PI*2, a2=startA+((i+1)/60)*Math.PI*2;
+    const t=i/60;
+    let col;
+    if(t<0.33) col=`rgb(${Math.floor(74+181*t/0.33)},${Math.floor(222-222*t/0.33)},${Math.floor(128-128*t/0.33)})`;
+    else if(t<0.66) col=`rgb(${Math.floor(255-(255-250)*(t-0.33)/0.33)},${Math.floor(0+204*(t-0.33)/0.33)},${Math.floor(0+37*(t-0.33)/0.33)})`;
+    else col=`rgb(${Math.floor(250-(250-239)*(t-0.66)/0.34)},${Math.floor(204-(204-68)*(t-0.66)/0.34)},${Math.floor(37-(37-37)*(t-0.66)/0.34)})`;
+    ctx.beginPath(); ctx.arc(cx,cy,ringR,a1,a2); ctx.strokeStyle=col; ctx.lineWidth=5; ctx.stroke();
+  }
+
+  // 力度文字
+  ctx.fillStyle='#fff'; ctx.font='bold 14px "Segoe UI",system-ui'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(Math.floor(pct*100)+'%', cx, cy+ringR+16);
+
+  // 拉杆线（从白球到手指方向）
+  const pullLen=power/MP*100;
+  ctx.strokeStyle='rgba(255,255,255,0.4)'; ctx.lineWidth=2; ctx.setLineDash([4,6]);
+  ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx-Math.cos(aimA)*pullLen,cy-Math.sin(aimA)*pullLen); ctx.stroke(); ctx.setLineDash([]);
+}
+
 function drawAimLine() {
-  if (gamePhase !== 'aiming' || shotInProgress) return;
-  if (gameMode === 'ai' && currentPlayer === 2) return;
-  if (gameMode === 'versus' && currentPlayer === 2) return;
-
-  predictTrajectory();
-  ctx.strokeStyle = 'rgba(255,255,255,0.18)'; ctx.lineWidth = 2.5; ctx.setLineDash([4, 8]);
-  ctx.beginPath(); ctx.moveTo(cueBall.x, cueBall.y);
-  for (const g of ghostBalls) ctx.lineTo(g.x, g.y);
-  ctx.stroke(); ctx.setLineDash([]);
-
-  const lineLen = 100;
-  ctx.strokeStyle = 'rgba(255,255,255,0.55)'; ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  ctx.moveTo(cueBall.x, cueBall.y);
-  ctx.lineTo(cueBall.x + Math.cos(aimAngle) * lineLen, cueBall.y + Math.sin(aimAngle) * lineLen);
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.arc(cueBall.x + Math.cos(aimAngle) * 13, cueBall.y + Math.sin(aimAngle) * 13, 3.5, 0, Math.PI*2);
-  ctx.fillStyle = 'rgba(255,255,255,0.8)'; ctx.fill();
-}
-
-function drawGhostCue() {
-  if (gamePhase !== 'aiming' || shotInProgress) return;
-  if (gameMode === 'ai' && currentPlayer === 2) return;
-  if (gameMode === 'versus' && currentPlayer === 2) return;
-
-  // 根据旋转类型偏移球杆击球点
-  let offsetX = 0, offsetY = 0;
-  const offsetDist = BALL_R * 0.55;
-  switch (currentSpin) {
-    case 'top':    offsetY = -offsetDist; break;
-    case 'bottom': offsetY = offsetDist; break;
-    case 'left':   offsetX = -offsetDist; break;
-    case 'right':  offsetX = offsetDist; break;
-  }
-  // 将偏移旋转到瞄准方向
-  const cosA = Math.cos(aimAngle), sinA = Math.sin(aimAngle);
-  const rotatedOX = offsetX * cosA - offsetY * sinA;
-  const rotatedOY = offsetX * sinA + offsetY * cosA;
-
-  // 偏移后的接触点
-  const contactX = cueBall.x + rotatedOX;
-  const contactY = cueBall.y + rotatedOY;
-
-  const totalLen = 220;
-  const tipStart = 18;
-  const shaftLen = 140;
-
-  const tipX = contactX - cosA * tipStart;
-  const tipY = contactY - sinA * tipStart;
-  const backX = contactX - cosA * (tipStart + totalLen);
-  const backY = contactY - sinA * (tipStart + totalLen);
-  const jointX = contactX - cosA * (tipStart + shaftLen);
-  const jointY = contactY - sinA * (tipStart + shaftLen);
-
-  const ux = cosA, uy = sinA;
-  const px = -uy, py = ux;
-  const tipW = 1.6, jointW = 3.5, buttW = 6.5, backW = 5.0;
-
-  function drawSeg(shadow, x1, y1, w1, x2, y2, w2, color) {
-    ctx.fillStyle = color;
-    if (shadow) ctx.fillStyle = 'rgba(0,0,0,0.25)';
-    ctx.beginPath();
-    const shOff = shadow ? 2 : 0;
-    ctx.moveTo(x1 + px*w1 + shOff, y1 + py*w1 + shOff);
-    ctx.lineTo(x2 + px*w2 + shOff, y2 + py*w2 + shOff);
-    ctx.lineTo(x2 - px*w2 + shOff, y2 - py*w2 + shOff);
-    ctx.lineTo(x1 - px*w1 + shOff, y1 - py*w1 + shOff);
-    ctx.closePath(); ctx.fill();
-  }
-
-  drawSeg(true, tipX, tipY, tipW, jointX, jointY, jointW, null);
-  drawSeg(true, jointX, jointY, jointW, backX, backY, buttW, null);
-
-  const shaftGrad = ctx.createLinearGradient(tipX-ux*10, tipY-uy*10, jointX+ux*10, jointY+uy*10);
-  shaftGrad.addColorStop(0,'#f5e6c8'); shaftGrad.addColorStop(0.3,'#e6c99a');
-  shaftGrad.addColorStop(0.7,'#c8a06e'); shaftGrad.addColorStop(1,'#a47c48');
-  drawSeg(false, tipX, tipY, tipW, jointX, jointY, jointW, shaftGrad);
-
-  ctx.strokeStyle = 'rgba(101,67,33,0.2)'; ctx.lineWidth = 0.8;
-  for (let k=0.15; k<0.85; k+=0.18) {
-    const mx = tipX+(jointX-tipX)*k, my = tipY+(jointY-tipY)*k;
-    const mw = tipW+(jointW-tipW)*k;
-    ctx.beginPath(); ctx.moveTo(mx+px*mw*0.3, my+py*mw*0.3); ctx.lineTo(mx-px*mw*0.3, my-py*mw*0.3); ctx.stroke();
-  }
-
-  drawSeg(false, jointX-ux*2, jointY-uy*2, jointW+0.5, jointX+ux*2, jointY+uy*2, jointW+0.5, '#b0b0b0');
-
-  const buttGrad = ctx.createLinearGradient(jointX, jointY, backX, backY);
-  buttGrad.addColorStop(0,'#2a2a2a'); buttGrad.addColorStop(0.5,'#111111'); buttGrad.addColorStop(1,'#050505');
-  drawSeg(false, jointX+ux*2, jointY+uy*2, jointW+0.5, backX, backY, buttW, buttGrad);
-
-  const endCapX = backX-ux*8, endCapY = backY-uy*8;
-  drawSeg(false, backX, backY, buttW, endCapX, endCapY, backW, '#888888');
-  ctx.fillStyle = '#aaaaaa';
-  ctx.beginPath(); ctx.ellipse(endCapX, endCapY, backW, backW*0.4, aimAngle, 0, Math.PI*2); ctx.fill();
-
-  ctx.fillStyle = '#f8e8c8';
-  ctx.beginPath(); ctx.ellipse(tipX, tipY, tipW, tipW*0.35, aimAngle, 0, Math.PI*2); ctx.fill();
-  ctx.strokeStyle = 'rgba(0,0,0,0.2)'; ctx.lineWidth = 0.5; ctx.stroke();
-
-  // 绘制旋转击球点标记（在白球表面）
-  if (currentSpin !== 'center') {
-    const dotX = contactX, dotY = contactY;
-    ctx.beginPath(); ctx.arc(dotX, dotY, 2.5, 0, Math.PI*2);
-    ctx.fillStyle = 'rgba(255,50,50,0.8)'; ctx.fill();
-    ctx.strokeStyle = 'rgba(255,255,255,0.6)'; ctx.lineWidth = 1; ctx.stroke();
-  }
-}
-
-function drawPowerIndicator() {
-  if (gamePhase !== 'power') return;
-  document.getElementById('power-bar-container').style.display = 'block';
-  document.getElementById('power-bar').style.width = (powerLevel / MAX_POWER * 100) + '%';
+  if(phase!=='aim'||shot) return;
+  if(gm==='ai'&&cp===2) return;
+  if(gm==='versus'&&cp===2) return;
+  predict();
+  ctx.strokeStyle='rgba(255,255,255,0.18)'; ctx.lineWidth=2.5; ctx.setLineDash([4,8]);
+  ctx.beginPath(); ctx.moveTo(cue.x,cue.y); for(const g of ghosts) ctx.lineTo(g.x,g.y); ctx.stroke(); ctx.setLineDash([]);
+  ctx.strokeStyle='rgba(255,255,255,0.55)'; ctx.lineWidth=1.5; ctx.beginPath(); ctx.moveTo(cue.x,cue.y); ctx.lineTo(cue.x+Math.cos(aimA)*100,cue.y+Math.sin(aimA)*100); ctx.stroke();
 }
 
 function render() {
-  ctx.clearRect(0, 0, TABLE_W, TABLE_H);
-  drawTable();
-  const nonCue = balls.filter(b => !b.isCue);
-  for (const b of nonCue) drawBall(b);
-  if (cueBall && !cueBall.pocketed) drawBall(cueBall);
+  ctx.clearRect(0,0,TW,TH); drawTable();
+  for(const b of balls.filter(b=>!b.isCue)) drawBall(b);
+  if(cue&&!cue.pocketed) drawBall(cue);
   drawAimLine();
-  drawGhostCue();
-  drawPowerIndicator();
-  if (gamePhase !== 'power') document.getElementById('power-bar-container').style.display = 'none';
+  drawCueStick();
+  drawPowerRing();
 }
 
-function lightenColor(hex, p) { const n=parseInt(hex.replace('#',''),16), a=Math.round(2.55*p); return `rgb(${Math.min(255,(n>>16)+a)},${Math.min(255,((n>>8)&0xFF)+a)},${Math.min(255,(n&0xFF)+a)})`; }
-function darkenColor(hex, p) { const n=parseInt(hex.replace('#',''),16), a=Math.round(2.55*p); return `rgb(${Math.max(0,(n>>16)-a)},${Math.max(0,((n>>8)&0xFF)-a)},${Math.max(0,(n&0xFF)-a)})`; }
+function lc(hex,p) { const n=parseInt(hex.replace('#',''),16),a=Math.round(2.55*p); return `rgb(${Math.min(255,(n>>16)+a)},${Math.min(255,((n>>8)&0xFF)+a)},${Math.min(255,(n&0xFF)+a)})`; }
+function dc(hex,p) { const n=parseInt(hex.replace('#',''),16),a=Math.round(2.55*p); return `rgb(${Math.max(0,(n>>16)-a)},${Math.max(0,((n>>8)&0xFF)-a)},${Math.max(0,(n&0xFF)-a)})`; }
 
 // ==================== 游戏逻辑 ====================
-function assignTypes(num) {
-  if (typesAssigned || num === 8) return;
-  player1Type = (num >= 1 && num <= 7) ? 'solid' : 'stripe';
-  player2Type = player1Type === 'solid' ? 'stripe' : 'solid';
-  typesAssigned = true;
-  updateTurnIndicator();
+function assignTypes(num) { if(ta||num===8) return; p1t=(num>=1&&num<=7)?'solid':'stripe'; p2t=p1t==='solid'?'stripe':'solid'; ta=true; upTurn(); }
+function checkGS() { upScore(); const eb=balls.find(b=>b.number===8); if(eb&&eb.pocketed) { const ct=cp===1?p1t:p2t; const rem=ct==='solid'?gSC():gStC(); const w=cp===1?(gm==='badguy-solo'?'你':'玩家1'):(gm==='ai'?'🤖 AI':(gm==='badguy-duo'?'玩家2':'玩家2')); const l=cp===1?(gm==='ai'?'🤖 AI':(gm==='badguy-solo'?'':'玩家2')):(gm==='badguy-solo'?'你':'玩家1'); if(rem===0) endGame(w+' 获胜！🎉',false); else endGame(l+' 获胜！（对手提前打进8号球）',true); return true; } return false; }
+function endGame(msg,f) { phase='over'; shot=false; setMsg(msg,0); sfxWin(); upTurn(); }
+function onShotDone() {
+  if(checkGS()) return;
+  if(cue.pocketed) { cue.pocketed=false; cue.x=TW*0.25; cue.y=TH/2; cue.vx=0; cue.vy=0; cue.spinX=0; cue.spinY=0; setMsg('⚪ 白球进袋！换手。',2000); swP(); upTurn(); upScore(); return; }
+  const ct=cp===1?p1t:p2t; const pk=balls.filter(b=>!b.isCue&&b.pocketed&&b._jp);
+  if(pk.length===0) { swP(); setMsg('未进球，换手。',2000); }
+  else { if(!ta&&gm!=='basic'&&pk[0].number!==8) assignTypes(pk[0].number);
+    const ho=ct&&ta?pk.some(b=>ct==='solid'?(b.number>=1&&b.number<=7):(b.number>=9&&b.number<=15)):true;
+    if(!ho&&ta) { swP(); setMsg('打进了对手的球，换手。',2000); } else setMsg('🎯 好球！继续击球。',1500); }
+  balls.forEach(b=>{b._jp=false;}); upTurn(); upScore(); schedAI();
 }
+function swP() { cp=cp===1?2:1; if(gm==='badguy-solo') cp=1; }
+function doShoot(angle,pwr) { if(shot) return; shot=true; phase='shoot'; balls.forEach(b=>{b._wOT=!b.pocketed;});
+  const ss=pwr*0.15;
+  switch(spin) { case'top':cue.spinX=Math.cos(angle)*ss;cue.spinY=Math.sin(angle)*ss;break; case'bottom':cue.spinX=-Math.cos(angle)*ss;cue.spinY=-Math.sin(angle)*ss;break; case'left':cue.spinX=Math.sin(angle)*ss;cue.spinY=-Math.cos(angle)*ss;break; case'right':cue.spinX=-Math.sin(angle)*ss;cue.spinY=Math.cos(angle)*ss;break; default:cue.spinX=0;cue.spinY=0; }
+  cue.vx=Math.cos(angle)*pwr; cue.vy=Math.sin(angle)*pwr; ghosts=[]; }
+function schedAI() { if(gm==='ai'&&cp===2&&phase==='aim'&&!shot&&!aiTh) setTimeout(()=>aiDo(),800); }
 
-function checkGameState() {
-  updateScore();
-  const eb = balls.find(b => b.number === 8);
-  if (eb && eb.pocketed) {
-    const ct = currentPlayer === 1 ? player1Type : player2Type;
-    const remaining = ct === 'solid' ? getSolidCount() : getStripeCount();
-    const winner = currentPlayer === 1
-      ? (gameMode === 'badguy-solo' ? '你' : '玩家1')
-      : (gameMode === 'ai' ? '🤖 AI' : (gameMode === 'badguy-duo' ? '玩家2' : '玩家2'));
-    const loser = currentPlayer === 1
-      ? (gameMode === 'ai' ? '🤖 AI' : (gameMode === 'badguy-solo' ? '' : '玩家2'))
-      : (gameMode === 'badguy-solo' ? '你' : '玩家1');
-    if (remaining === 0) endGame(winner + ' 获胜！🎉', false);
-    else endGame(loser + ' 获胜！（对手提前打进8号球）', true);
-    return true;
+// ==================== AI ====================
+function aiDo() { if(aiTh||phase==='over'||shot) return; aiTh=true;
+  const ct=cp===2?p2t:p1t; let tg;
+  if(!ta||!ct) tg=balls.filter(b=>!b.isCue&&!b.pocketed&&b.number!==8);
+  else { tg=balls.filter(b=>!b.isCue&&!b.pocketed&&((ct==='solid'&&b.number>=1&&b.number<=7)||(ct==='stripe'&&b.number>=9&&b.number<=15))); if(tg.length===0) tg=balls.filter(b=>!b.isCue&&!b.pocketed&&b.number===8); }
+  if(tg.length===0) tg=balls.filter(b=>!b.isCue&&!b.pocketed);
+  let bs=-Infinity,ba=0,bp=MP*0.65,bSpin='center';
+  for(const t of tg) { for(const p of pockets) { const tpd=Math.hypot(t.x-p.x,t.y-p.y),ttd=Math.hypot(cue.x-t.x,cue.y-t.y); const tpa=Math.atan2(p.y-t.y,p.x-t.x); const gx=t.x-Math.cos(tpa)*BR*2,gy=t.y-Math.sin(tpa)*BR*2; const aga=Math.atan2(gy-cue.y,gx-cue.x); let pc=true;
+    for(const b of balls) { if(b.pocketed||b===t||b.isCue) continue; if(pld(b.x,b.y,t.x,t.y,p.x,p.y)<BR*2.5){pc=false;break;} if(pld(b.x,b.y,cue.x,cue.y,gx,gy)<BR*2.5){pc=false;break;} } if(!pc) continue;
+    const sc=(500-tpd)*2-ttd*0.5; if(sc>bs) { bs=sc; ba=aga; bp=MP*(0.5+Math.min(ttd/400,0.4)); const r=Math.random(); if(r<0.15) bSpin='top'; else if(r<0.3) bSpin='bottom'; else if(r<0.4) bSpin='left'; else if(r<0.5) bSpin='right'; else bSpin='center'; } } }
+  if(bs===-Infinity&&tg.length>0) { const t=tg[Math.floor(Math.random()*tg.length)]; ba=Math.atan2(t.y-cue.y,t.x-cue.x)+(Math.random()-0.5)*0.4; bp=MP*(0.5+Math.random()*0.3); bSpin='center'; }
+  ba+=(Math.random()-0.5)*0.08; bp+=(Math.random()-0.5)*2;
+  const delay=600+Math.random()*800; setMsg('🤖 AI正在计算最佳路线...',Math.floor(delay));
+  setTimeout(()=>{ setSpin(bSpin); doShoot(ba,Math.max(3,Math.min(MP,bp))); aiTh=false; },delay); }
+function pld(px,py,x1,y1,x2,y2) { const A=px-x1,B=py-y1,C=x2-x1,D=y2-y1,dot=A*C+B*D,ls=C*C+D*D; let p=ls!==0?Math.max(0,Math.min(1,dot/ls)):-1; return Math.hypot(px-(x1+p*C),py-(y1+p*D)); }
+
+// ==================== 新交互系统 ====================
+// 阶段：aim（移动瞄准方向） → pull（在白球附近按住拖拽拉杆力度） → shoot
+// 操作：移动鼠标/手指 → 调整方向；在白球附近按下并拖动 → 拉杆
+
+function isPlayerTurn() { if(phase==='over'||shot) return false; if(gm==='ai'&&cp===2) return false; if(gm==='versus'&&cp===2) return false; return true; }
+function canvasPos(e) { const r=canvas.getBoundingClientRect(); return {x:(e.clientX-r.left)*(TW/r.width),y:(e.clientY-r.top)*(TH/r.height)}; }
+
+function distToCue(mx,my) { return Math.hypot(mx-cue.x,my-cue.y); }
+
+canvas.addEventListener('mousemove',(e)=>{
+  const p=canvasPos(e); mouseX=p.x; mouseY=p.y;
+  if(!isPlayerTurn()) return;
+  if(phase==='aim') { aimA=Math.atan2(mouseY-cue.y,mouseX-cue.x); }
+  else if(phase==='pull'&&mDown) {
+    // 拉杆：计算向后拖拽的距离 → 力度
+    const backX=cue.x-Math.cos(aimA)*200, backY=cue.y-Math.sin(aimA)*200;
+    const dx=mouseX-backX, dy=mouseY-backY;
+    // 力度基于鼠标到白球后方参考点的距离
+    const dist=Math.hypot(mouseX-(cue.x-Math.cos(aimA)*50),mouseY-(cue.y-Math.sin(aimA)*50));
+    power=Math.min(MP,Math.max(0,dist/6));
   }
-  return false;
-}
+});
 
-function endGame(msg, isFoul) {
-  gamePhase = 'gameover'; shotInProgress = false;
-  setMessage(msg, 0); sfxWin(); updateTurnIndicator();
-}
+canvas.addEventListener('mousedown',(e)=>{
+  if(e.button!==0) return;
+  if(!isPlayerTurn()) return;
+  const p=canvasPos(e); mouseX=p.x; mouseY=p.y;
 
-function onShotComplete() {
-  if (checkGameState()) return;
-
-  if (cueBall.pocketed) {
-    cueBall.pocketed = false;
-    cueBall.x = TABLE_W * 0.25; cueBall.y = TABLE_H / 2;
-    cueBall.vx = 0; cueBall.vy = 0;
-    cueBall.spinX = 0; cueBall.spinY = 0;
-    setMessage('⚪ 白球进袋！换手击球。', 2000);
-    switchPlayer(); updateTurnIndicator(); updateScore(); return;
-  }
-
-  const ct = currentPlayer === 1 ? player1Type : player2Type;
-  const pkt = balls.filter(b => !b.isCue && b.pocketed && b._justPocketed);
-
-  if (pkt.length === 0) {
-    switchPlayer(); setMessage('未进球，换手。', 2000);
-  } else {
-    if (!typesAssigned && gameMode !== 'basic' && pkt[0].number !== 8) assignTypes(pkt[0].number);
-    const hitOwn = ct && typesAssigned
-      ? pkt.some(b => ct === 'solid' ? (b.number>=1&&b.number<=7) : (b.number>=9&&b.number<=15))
-      : true;
-    if (!hitOwn && typesAssigned) { switchPlayer(); setMessage('打进了对手的球，换手。', 2000); }
-    else setMessage('🎯 好球！继续击球。', 1500);
-  }
-
-  balls.forEach(b => { b._justPocketed = false; });
-  updateTurnIndicator(); updateScore();
-  scheduleAITurn();
-}
-
-function switchPlayer() {
-  currentPlayer = currentPlayer === 1 ? 2 : 1;
-  if (gameMode === 'badguy-solo') currentPlayer = 1;
-}
-
-function shoot(angle, power) {
-  if (shotInProgress) return;
-  shotInProgress = true;
-  gamePhase = 'shooting';
-  balls.forEach(b => { b._wasOnTable = !b.pocketed; });
-
-  // 根据旋转类型设置白球自旋
-  const spinStrength = power * 0.15;
-  switch (currentSpin) {
-    case 'top':    cueBall.spinX = Math.cos(angle) * spinStrength; cueBall.spinY = Math.sin(angle) * spinStrength; break;
-    case 'bottom': cueBall.spinX = -Math.cos(angle) * spinStrength; cueBall.spinY = -Math.sin(angle) * spinStrength; break;
-    case 'left':   cueBall.spinX = Math.sin(angle) * spinStrength; cueBall.spinY = -Math.cos(angle) * spinStrength; break;
-    case 'right':  cueBall.spinX = -Math.sin(angle) * spinStrength; cueBall.spinY = Math.cos(angle) * spinStrength; break;
-    default:       cueBall.spinX = 0; cueBall.spinY = 0;
-  }
-
-  cueBall.vx = Math.cos(angle) * power;
-  cueBall.vy = Math.sin(angle) * power;
-  ghostBalls = [];
-}
-
-function scheduleAITurn() {
-  if (gameMode === 'ai' && currentPlayer === 2 && gamePhase === 'aiming' && !shotInProgress && !aiThinking) {
-    setTimeout(() => aiShoot(), 800);
-  }
-}
-
-// ==================== AI（含旋转） ====================
-function aiShoot() {
-  if (aiThinking || gamePhase === 'gameover' || shotInProgress) return;
-  aiThinking = true;
-
-  const ct = currentPlayer === 2 ? player2Type : player1Type;
-  let targets;
-  if (!typesAssigned || !ct) targets = balls.filter(b => !b.isCue && !b.pocketed && b.number !== 8);
-  else {
-    targets = balls.filter(b => !b.isCue && !b.pocketed &&
-      ((ct === 'solid' && b.number>=1&&b.number<=7) || (ct==='stripe' && b.number>=9&&b.number<=15)));
-    if (targets.length === 0) targets = balls.filter(b => !b.isCue && !b.pocketed && b.number === 8);
-  }
-  if (targets.length === 0) targets = balls.filter(b => !b.isCue && !b.pocketed);
-
-  let bestScore = -Infinity, bestAngle = 0, bestPower = MAX_POWER * 0.65, bestSpin = 'center';
-
-  for (const target of targets) {
-    for (const pocket of pockets) {
-      const toPktDist = Math.hypot(target.x-pocket.x, target.y-pocket.y);
-      const toTgtDist = Math.hypot(cueBall.x-target.x, cueBall.y-target.y);
-      const ttpAngle = Math.atan2(pocket.y-target.y, pocket.x-target.x);
-      const ghostX = target.x - Math.cos(ttpAngle) * BALL_R * 2;
-      const ghostY = target.y - Math.sin(ttpAngle) * BALL_R * 2;
-      const aimGhostAngle = Math.atan2(ghostY-cueBall.y, ghostX-cueBall.x);
-
-      let pathClear = true;
-      for (const b of balls) {
-        if (b.pocketed || b===target || b.isCue) continue;
-        if (ptLineDist(b.x,b.y,target.x,target.y,pocket.x,pocket.y)<BALL_R*2.5) { pathClear=false; break; }
-        if (ptLineDist(b.x,b.y,cueBall.x,cueBall.y,ghostX,ghostY)<BALL_R*2.5) { pathClear=false; break; }
-      }
-      if (!pathClear) continue;
-
-      const score = (500-toPktDist)*2 - toTgtDist*0.5;
-      if (score > bestScore) {
-        bestScore = score;
-        bestAngle = aimGhostAngle;
-        bestPower = MAX_POWER*(0.5+Math.min(toTgtDist/400,0.4));
-        // AI偶尔使用旋转
-        const r = Math.random();
-        if (r < 0.15) bestSpin = 'top';
-        else if (r < 0.3) bestSpin = 'bottom';
-        else if (r < 0.4) bestSpin = 'left';
-        else if (r < 0.5) bestSpin = 'right';
-        else bestSpin = 'center';
-      }
+  if(phase==='aim') {
+    const d=distToCue(mouseX,mouseY);
+    // 在白球附近（150px内）按下 → 进入拉杆模式
+    if(d<150) {
+      phase='pull'; mDown=true; power=0;
+      canvas.parentElement.classList.add('pulling');
     }
   }
-
-  if (bestScore === -Infinity && targets.length > 0) {
-    const t = targets[Math.floor(Math.random()*targets.length)];
-    bestAngle = Math.atan2(t.y-cueBall.y, t.x-cueBall.x) + (Math.random()-0.5)*0.4;
-    bestPower = MAX_POWER*(0.5+Math.random()*0.3);
-    bestSpin = 'center';
-  }
-
-  bestAngle += (Math.random()-0.5)*0.08;
-  bestPower += (Math.random()-0.5)*2;
-
-  const delay = 600 + Math.random()*800;
-  setMessage('🤖 AI正在计算最佳路线...', Math.floor(delay));
-
-  setTimeout(() => {
-    setSpin(bestSpin);
-    shoot(bestAngle, Math.max(3, Math.min(MAX_POWER, bestPower)));
-    aiThinking = false;
-  }, delay);
-}
-
-function ptLineDist(px, py, x1, y1, x2, y2) {
-  const A=px-x1,B=py-y1,C=x2-x1,D=y2-y1;
-  const dot=A*C+B*D, lenSq=C*C+D*D;
-  let p = lenSq!==0 ? Math.max(0,Math.min(1,dot/lenSq)) : -1;
-  const xx=x1+p*C, yy=y1+p*D;
-  return Math.hypot(px-xx, py-yy);
-}
-
-// ==================== 事件处理 ====================
-function isPlayerTurn() {
-  if (gamePhase==='gameover'||shotInProgress) return false;
-  if (gameMode==='ai'&&currentPlayer===2) return false;
-  if (gameMode==='versus'&&currentPlayer===2) return false;
-  return true;
-}
-
-canvas.addEventListener('mousemove', (e) => {
-  const rect = canvas.getBoundingClientRect();
-  mouseX = (e.clientX-rect.left)*(TABLE_W/rect.width);
-  mouseY = (e.clientY-rect.top)*(TABLE_H/rect.height);
-  if (gamePhase==='aiming'&&isPlayerTurn()) aimAngle = Math.atan2(mouseY-cueBall.y, mouseX-cueBall.x);
 });
 
-canvas.addEventListener('mousedown', (e) => {
-  if (e.button!==0) return;
-  if (gamePhase==='aiming'&&isPlayerTurn()) {
-    mouseDown=true; gamePhase='power'; powerLevel=0; powerIncreasing=true;
+canvas.addEventListener('mouseup',(e)=>{
+  if(e.button!==0) return;
+  if(phase==='pull'&&mDown) {
+    mDown=false; canvas.parentElement.classList.remove('pulling');
+    if(power>0.5) { doShoot(aimA,power); }
+    else { phase='aim'; power=0; } // 力度太小取消
   }
 });
 
-canvas.addEventListener('mouseup', (e) => {
-  if (e.button!==0) return;
-  if (gamePhase==='power'&&mouseDown) { mouseDown=false; shoot(aimAngle, powerLevel); }
-});
-
-canvas.addEventListener('mouseleave', () => {
-  if (gamePhase==='power'&&mouseDown) { mouseDown=false; shoot(aimAngle, powerLevel); }
+canvas.addEventListener('mouseleave',()=>{
+  if(phase==='pull'&&mDown) {
+    mDown=false; canvas.parentElement.classList.remove('pulling');
+    if(power>0.5) doShoot(aimA,power); else { phase='aim'; power=0; }
+  }
 });
 
 // 触屏
-canvas.addEventListener('touchmove', (e) => {
+canvas.addEventListener('touchmove',(e)=>{
   e.preventDefault();
-  const rect = canvas.getBoundingClientRect();
-  const t = e.touches[0];
-  mouseX = (t.clientX-rect.left)*(TABLE_W/rect.width);
-  mouseY = (t.clientY-rect.top)*(TABLE_H/rect.height);
-  if (gamePhase==='aiming'&&isPlayerTurn()) aimAngle = Math.atan2(mouseY-cueBall.y, mouseX-cueBall.x);
-}, {passive:false});
-
-canvas.addEventListener('touchstart', (e) => {
-  e.preventDefault();
-  if (gamePhase==='aiming'&&isPlayerTurn()) {
-    const rect = canvas.getBoundingClientRect();
-    const t = e.touches[0];
-    mouseX = (t.clientX-rect.left)*(TABLE_W/rect.width);
-    mouseY = (t.clientY-rect.top)*(TABLE_H/rect.height);
-    aimAngle = Math.atan2(mouseY-cueBall.y, mouseX-cueBall.x);
-    mouseDown=true; gamePhase='power'; powerLevel=0; powerIncreasing=true;
+  const r=canvas.getBoundingClientRect(); const t=e.touches[0];
+  mouseX=(t.clientX-r.left)*(TW/r.width); mouseY=(t.clientY-r.top)*(TH/r.height);
+  if(!isPlayerTurn()) return;
+  if(phase==='aim') { aimA=Math.atan2(mouseY-cue.y,mouseX-cue.x); }
+  else if(phase==='pull'&&mDown) {
+    const dist=Math.hypot(mouseX-(cue.x-Math.cos(aimA)*50),mouseY-(cue.y-Math.sin(aimA)*50));
+    power=Math.min(MP,Math.max(0,dist/6));
   }
-}, {passive:false});
+},{passive:false});
 
-canvas.addEventListener('touchend', (e) => {
+canvas.addEventListener('touchstart',(e)=>{
   e.preventDefault();
-  if (gamePhase==='power'&&mouseDown) { mouseDown=false; shoot(aimAngle, powerLevel); }
-}, {passive:false});
+  if(!isPlayerTurn()) return;
+  const r=canvas.getBoundingClientRect(); const t=e.touches[0];
+  mouseX=(t.clientX-r.left)*(TW/r.width); mouseY=(t.clientY-r.top)*(TH/r.height);
+  if(phase==='aim') { aimA=Math.atan2(mouseY-cue.y,mouseX-cue.x); const d=distToCue(mouseX,mouseY); if(d<150) { phase='pull'; mDown=true; power=0; canvas.parentElement.classList.add('pulling'); } }
+},{passive:false});
+
+canvas.addEventListener('touchend',(e)=>{
+  e.preventDefault();
+  if(phase==='pull'&&mDown) { mDown=false; canvas.parentElement.classList.remove('pulling'); if(power>0.5) doShoot(aimA,power); else { phase='aim'; power=0; } }
+},{passive:false});
 
 // 键盘
-document.addEventListener('keydown', (e) => {
-  if (gamePhase==='gameover') return;
+document.addEventListener('keydown',(e)=>{
+  if(phase==='over') return;
   switch(e.key.toLowerCase()) {
-    case 'r': resetGame(); break;
-    case 'escape': backToMenu(); break;
-    case '1': setSpin('top'); break;
-    case '2': setSpin('bottom'); break;
-    case '3': setSpin('left'); break;
-    case '4': setSpin('right'); break;
-    case '0': setSpin('center'); break;
-    case ' ':
+    case'r':resetGame();break; case'escape':backToMenu();break;
+    case'1':setSpin('top');break; case'2':setSpin('bottom');break; case'3':setSpin('left');break; case'4':setSpin('right');break; case'0':setSpin('center');break;
+    case' ':
       e.preventDefault();
-      if (gamePhase==='aiming'&&isPlayerTurn()) { gamePhase='power'; powerLevel=0; powerIncreasing=true; mouseDown=true; }
-      else if (gamePhase==='power'&&mouseDown) { mouseDown=false; shoot(aimAngle, powerLevel); }
+      if(phase==='aim'&&isPlayerTurn()) { phase='pull'; mDown=true; power=0; canvas.parentElement.classList.add('pulling'); }
+      else if(phase==='pull'&&mDown) { mDown=false; canvas.parentElement.classList.remove('pulling'); if(power>0.5) doShoot(aimA,power); else { phase='aim'; power=0; } }
       break;
   }
 });
 
 // ==================== 游戏循环 ====================
-let lastTime = 0, settleFrames = 0;
-
-function gameLoop(timestamp) {
-  lastTime = timestamp;
-
-  if (gamePhase==='power'&&mouseDown) {
-    if (powerIncreasing) { powerLevel+=0.35; if (powerLevel>=MAX_POWER) powerIncreasing=false; }
-    else { powerLevel-=0.35; if (powerLevel<=0) powerIncreasing=true; }
-  }
-
-  if (gamePhase==='shooting') {
-    const settled = updatePhysics();
-    if (settled) {
-      settleFrames++;
-      if (settleFrames>20) {
-        settleFrames=0; shotInProgress=false; gamePhase='aiming';
-        balls.forEach(b => { if (b._wasOnTable&&b.pocketed) b._justPocketed=true; delete b._wasOnTable; });
-        onShotComplete();
-      }
-    } else { settleFrames=0; }
-  }
-
-  render();
-  requestAnimationFrame(gameLoop);
+let lt=0,sf=0;
+function loop(ts) {
+  lt=ts;
+  if(phase==='shoot') { const s=upPhys(); if(s) { sf++; if(sf>20) { sf=0; shot=false; phase='aim'; balls.forEach(b=>{if(b._wOT&&b.pocketed) b._jp=true; delete b._wOT;}); onShotDone(); } } else sf=0; }
+  render(); requestAnimationFrame(loop);
 }
 
-// ==================== 模式切换 ====================
+// ==================== 模式 ====================
 function startGame(mode) {
-  gameMode = mode;
-  if (mode!=='badguy-solo'&&mode!=='badguy-duo') badGuyFace = null;
-  balls=[]; currentPlayer=1; player1Type=null; player2Type=null; typesAssigned=false;
-  gamePhase='aiming'; shotInProgress=false; settleFrames=0; aiThinking=false;
-  ghostBalls=[]; powerLevel=0; mouseDown=false; setSpin('center');
-
-  document.getElementById('menu').style.display='none';
-  document.getElementById('face-upload-area').style.display='none';
-  document.getElementById('game-container').style.display='flex';
-  document.getElementById('power-bar-container').style.display='none';
-  document.getElementById('pocket-display').innerHTML='';
-
-  const labels = { basic:'🎱 基础模式', ai:'🤖 AI对战', versus:'👥 双人对战', 'badguy-solo':'💀 暴击坏人·单人', 'badguy-duo':'💀 暴击坏人·双人' };
-  document.getElementById('mode-label').textContent = labels[mode] || mode;
-
-  initBalls(); updateScore(); updateTurnIndicator();
-  setMessage('拖动鼠标瞄准 🎯 按住蓄力后释放击球！1-4键选旋转', 3000);
-
-  if (mode==='ai' && Math.random()<0.5) {
-    currentPlayer=2; updateTurnIndicator();
-    setTimeout(() => aiShoot(), 1200);
-  }
+  gm=mode; if(mode!=='badguy-solo'&&mode!=='badguy-duo') badFace=null;
+  balls=[]; cp=1; p1t=null; p2t=null; ta=false; phase='aim'; shot=false; sf=0; aiTh=false; ghosts=[]; power=0; mDown=false; setSpin('center');
+  document.getElementById('menu').style.display='none'; document.getElementById('face-upload-area').style.display='none'; document.getElementById('game-container').style.display='flex'; document.getElementById('pocket-display').innerHTML='';
+  const lb={basic:'🎱 基础模式',ai:'🤖 AI对战',versus:'👥 双人对战','badguy-solo':'💀 暴击坏人·单人','badguy-duo':'💀 暴击坏人·双人'};
+  document.getElementById('mode-label').textContent=lb[mode]||mode;
+  initBalls(); upScore(); upTurn(); setMsg('移动鼠标瞄准 🎯 在白球附近按住拖拽拉杆控制力度！',3000);
+  if(mode==='ai'&&Math.random()<0.5) { cp=2; upTurn(); setTimeout(()=>aiDo(),1200); }
 }
+function startBadGuyMode() { document.getElementById('menu').style.display='none'; document.getElementById('face-upload-area').style.display='flex'; document.getElementById('bad-guy-mode-select').style.display='none'; document.getElementById('face-preview').style.display='none'; document.getElementById('face-input').value=''; }
+function handleFaceUpload(ev) { const f=ev.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=function(e){const i=new Image(); i.onload=function(){badFace=i; document.getElementById('face-preview').src=e.target.result; document.getElementById('face-preview').style.display='block'; document.getElementById('bad-guy-mode-select').style.display='flex';}; i.src=e.target.result;}; r.readAsDataURL(f); }
+function resetGame() { balls=[]; cp=1; p1t=null; p2t=null; ta=false; phase='aim'; shot=false; sf=0; aiTh=false; ghosts=[]; power=0; mDown=false; setSpin('center'); document.getElementById('pocket-display').innerHTML=''; initBalls(); upScore(); upTurn(); setMsg('🔄 游戏已重置！',2000); if(gm==='ai'&&Math.random()<0.5) { cp=2; upTurn(); setTimeout(()=>aiDo(),1200); } }
+function backToMenu() { gm=null; balls=[]; shot=false; phase='aim'; aiTh=false; document.getElementById('menu').style.display='flex'; document.getElementById('face-upload-area').style.display='none'; document.getElementById('game-container').style.display='none'; document.getElementById('message').textContent=''; document.getElementById('face-preview').style.display='none'; document.getElementById('bad-guy-mode-select').style.display='none'; document.getElementById('pocket-display').innerHTML=''; }
 
-function startBadGuyMode() {
-  document.getElementById('menu').style.display='none';
-  document.getElementById('face-upload-area').style.display='flex';
-  document.getElementById('bad-guy-mode-select').style.display='none';
-  document.getElementById('face-preview').style.display='none';
-  document.getElementById('face-input').value='';
-}
-
-function handleFaceUpload(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const img = new Image();
-    img.onload = function() {
-      badGuyFace = img;
-      document.getElementById('face-preview').src = e.target.result;
-      document.getElementById('face-preview').style.display = 'block';
-      document.getElementById('bad-guy-mode-select').style.display = 'flex';
-    };
-    img.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
-}
-
-function resetGame() {
-  balls=[]; currentPlayer=1; player1Type=null; player2Type=null; typesAssigned=false;
-  gamePhase='aiming'; shotInProgress=false; settleFrames=0; aiThinking=false;
-  ghostBalls=[]; powerLevel=0; mouseDown=false; setSpin('center');
-  document.getElementById('pocket-display').innerHTML='';
-  initBalls(); updateScore(); updateTurnIndicator();
-  setMessage('🔄 游戏已重置！', 2000);
-  if (gameMode==='ai' && Math.random()<0.5) { currentPlayer=2; updateTurnIndicator(); setTimeout(()=>aiShoot(),1200); }
-}
-
-function backToMenu() {
-  gameMode=null; balls=[]; shotInProgress=false; gamePhase='aiming'; aiThinking=false;
-  document.getElementById('menu').style.display='flex';
-  document.getElementById('face-upload-area').style.display='none';
-  document.getElementById('game-container').style.display='none';
-  document.getElementById('power-bar-container').style.display='none';
-  document.getElementById('message').textContent='';
-  document.getElementById('face-preview').style.display='none';
-  document.getElementById('bad-guy-mode-select').style.display='none';
-  document.getElementById('pocket-display').innerHTML='';
-}
-
-// 启动
-initBalls(); updateScore();
-requestAnimationFrame(gameLoop);
+initBalls(); upScore(); requestAnimationFrame(loop);
 </script>
 </body>
 </html>
