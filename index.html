@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>🎱 8球台球 - Pool 8-Ball</title>
+<style>
+:root {
+  --felt: #0d7a3e; --felt-dark: #0a5c2f; --wood: #6b3a2a;
+  --wood-light: #8b5a3c; --gold: #d4a853; --bg: #1a1a2e;
+  --panel: #16213e; --text: #e0e0e0; --text-dim: #999;
+  --accent: #e94560; --accent2: #0f3460; --white: #fff;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow-x: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  background-image: radial-gradient(ellipse at center, #1e2a3a 0%, #0d1117 100%);
+}
+#app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  max-width: 1100px;
+  width: 100%;
+}
+h1 { font-size: 1.8rem; font-weight: 700; color: var(--gold); letter-spacing: 2px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+h1 span { font-size: 1rem; color: var(--text-dim); margin-left: 8px; }
+
+/* Menu */
+#menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 40px 30px;
+  background: var(--panel);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  min-width: 360px;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+#menu h2 { font-size: 1.4rem; color: var(--gold); margin-bottom: 8px; }
+.mode-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+}
+.mode-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 20px 16px;
+  border: 2px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  background: var(--accent2);
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.25s;
+  font-size: 1rem;
+  font-family: inherit;
+}
+.mode-btn:hover { border-color: var(--gold); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(212,168,83,0.2); }
+.mode-btn:active { transform: scale(0.97); }
+.mode-btn .icon { font-size: 2.2rem; }
+.mode-btn .label { font-weight: 600; }
+.mode-btn .desc { font-size: 0.75rem; color: var(--text-dim); }
+.mode-btn.bad-guy { border-color: var(--accent); background: linear-gradient(135deg, #3d0a0a, #5c1a1a); }
+.mode-btn.bad-guy:hover { border-color: #ff4444; box-shadow: 0 8px 24px rgba(233,69,96,0.3); }
+
+/* Game Container */
+#game-container {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+#game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 900px;
+  padding: 8px 16px;
+  background: var(--panel);
+  border-radius: 10px;
+  gap: 12px;
+  flex-wrap: wrap;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+#game-header .info { display: flex; align-items: center; gap: 12px; font-size: 0.9rem; }
+#game-header .turn-indicator {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+.turn-p1 { background: #e94560; color: #fff; }
+.turn-p2 { background: #3b82f6; color: #fff; }
+.turn-ai { background: #8b5cf6; color: #fff; animation: pulse 1.2s infinite; }
+@keyframes pulse {
+  0%,100% { opacity:1; } 50% { opacity:0.6; }
+}
+#score { font-weight: 700; font-size: 1.1rem; color: var(--gold); white-space: nowrap; }
+#pocket-display { font-size: 0.8rem; color: var(--text-dim); white-space: nowrap; }
+
+.btn {
+  padding: 8px 18px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+  background: var(--accent2);
+  color: var(--text);
+  font-family: inherit;
+}
+.btn:hover { filter: brightness(1.2); transform: translateY(-1px); }
+.btn:active { transform: scale(0.96); }
+.btn.back { background: transparent; border: 1px solid rgba(255,255,255,0.2); }
+.btn.gold { background: var(--gold); color: #1a1a2e; }
+
+canvas {
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  cursor: crosshair;
+  max-width: 100%;
+  height: auto;
+}
+
+#power-bar-container {
+  display: none;
+  width: 100%;
+  max-width: 900px;
+  height: 10px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 5px;
+  overflow: hidden;
+}
+#power-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #4ade80, #facc15, #ef4444);
+  border-radius: 5px;
+  transition: width 0.05s linear;
+  width: 0%;
+}
+
+#message {
+  text-align: center;
+  font-size: 0.95rem;
+  color: var(--gold);
+  min-height: 24px;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+#message.flash { animation: msgFlash 0.6s ease-out; }
+@keyframes msgFlash { 0%{transform:scale(1.2);color:#fff} 100%{transform:scale(1);color:var(--gold)} }
+
+/* Face Upload */
+#face-upload-area {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 20px;
+  background: var(--panel);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+#face-upload-area h3 { color: var(--accent); }
+#face-preview { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent); display: none; }
+#face-input { display: none; }
+.upload-label {
+  padding: 12px 24px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+.upload-label:hover { filter: brightness(1.2); }
+
+/* Pocketed balls display */
+.pocketed-row {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.pocketed-dot {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.3);
+  transition: all 0.3s;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  h1 { font-size: 1.3rem; }
+  .mode-grid { grid-template-columns: 1fr; }
+  #menu { min-width: unset; padding: 24px 16px; }
+  #game-header { padding: 6px 10px; gap: 6px; }
+  #game-header .info { font-size: 0.78rem; gap: 6px; }
+  .btn { padding: 6px 12px; font-size: 0.78rem; }
+  #pocket-display { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <h1>🎱 8球台球 <span>Pool 8-Ball</span></h1>
+
+  <!-- Main Menu -->
+  <div id="menu">
+    <h2>选择游戏模式</h2>
+    <div class="mode-grid">
+      <button class="mode-btn" onclick="startGame('basic')">
+        <span class="icon">🎱</span>
+        <span class="label">基础模式</span>
+        <span class="desc">经典8球练习</span>
+      </button>
+      <button class="mode-btn" onclick="startGame('ai')">
+        <span class="icon">🤖</span>
+        <span class="label">AI对战</span>
+        <span class="desc">挑战智能对手</span>
+      </button>
+      <button class="mode-btn" onclick="startGame('versus')">
+        <span class="icon">👥</span>
+        <span class="label">双人对战</span>
+        <span class="desc">两人轮流击球</span>
+      </button>
+      <button class="mode-btn bad-guy" onclick="startBadGuyMode()">
+        <span class="icon">💀</span>
+        <span class="label">暴击坏人模式</span>
+        <span class="desc">上传照片暴击!</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Face Upload -->
+  <div id="face-upload-area">
+    <h3>😈 上传讨厌的人的照片</h3>
+    <img id="face-preview" alt="预览">
+    <input type="file" id="face-input" accept="image/*" onchange="handleFaceUpload(event)">
+    <label class="upload-label" for="face-input">📷 选择照片</label>
+    <div id="bad-guy-mode-select" style="display:none;flex-direction:column;align-items:center;gap:12px;width:100%;">
+      <p style="color:var(--gold);font-weight:600;">照片已就绪！选择模式：</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+        <button class="mode-btn" onclick="startGame('badguy-solo')" style="grid-column:unset;">
+          <span class="icon">💀</span><span class="label">单人暴击</span>
+        </button>
+        <button class="mode-btn" onclick="startGame('badguy-duo')" style="grid-column:unset;">
+          <span class="icon">💀👥</span><span class="label">双人暴击</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game -->
+  <div id="game-container">
+    <div id="game-header">
+      <div class="info">
+        <span id="mode-label">基础模式</span>
+        <span id="turn-indicator" class="turn-indicator turn-p1">玩家1回合</span>
+        <span id="score">🎱 剩余: 16</span>
+        <span id="pocket-display"></span>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn gold" onclick="resetGame()">🔄 重新开始</button>
+        <button class="btn back" onclick="backToMenu()">🏠 菜单</button>
+      </div>
+    </div>
+    <canvas id="game-canvas" width="900" height="500"></canvas>
+    <div id="power-bar-container"><div id="power-bar"></div></div>
+    <div id="message">拖动鼠标瞄准，按住蓄力后释放击球！</div>
+  </div>
+</div>
+
+<script>
+// ==================== 音效引擎 ====================
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx = null;
+function ensureAudio() { if (!audioCtx) audioCtx = new AudioCtx(); return audioCtx; }
+
+function playSound(freq, type, duration, vol = 0.1, decay = true) {
+  try {
+    const ctx = ensureAudio();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    gain.gain.setValueAtTime(vol, ctx.currentTime);
+    if (decay) gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + duration);
+  } catch(e) {}
+}
+
+function sfxHit() { playSound(200, 'triangle', 0.08, 0.15); }
+function sfxPocket() { playSound(500, 'sine', 0.2, 0.12); setTimeout(() => playSound(800, 'sine', 0.15, 0.1), 100); }
+function sfxCushion() { playSound(120, 'square', 0.06, 0.05); }
+function sfxWin() { playSound(523, 'sine', 0.15, 0.3); setTimeout(() => playSound(659, 'sine', 0.15, 0.3), 150); setTimeout(() => playSound(784, 'sine', 0.2, 0.5), 300); }
+
+// ==================== 游戏引擎 ====================
+const canvas = document.getElementById('game-canvas');
+const ctx = canvas.getContext('2d');
+
+function resizeCanvas() {
+  const maxW = Math.min(window.innerWidth - 20, 900);
+  const ratio = maxW / 900;
+  canvas.style.width = maxW + 'px';
+  canvas.style.height = (500 * ratio) + 'px';
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+const TABLE_W = 900, TABLE_H = 500;
+const TABLE_MARGIN = 50;
+const POCKET_R = 18;
+const BALL_R = 12;
+const FRICTION = 0.985;
+const MIN_SPEED = 0.12;
+const MAX_POWER = 24;
+
+const pockets = [
+  {x: TABLE_MARGIN, y: TABLE_MARGIN},
+  {x: TABLE_W/2, y: TABLE_MARGIN - 6},
+  {x: TABLE_W - TABLE_MARGIN, y: TABLE_MARGIN},
+  {x: TABLE_MARGIN, y: TABLE_H - TABLE_MARGIN},
+  {x: TABLE_W/2, y: TABLE_H - TABLE_MARGIN + 6},
+  {x: TABLE_W - TABLE_MARGIN, y: TABLE_H - TABLE_MARGIN},
+];
+
+class Ball {
+  constructor(x, y, number, color, isCue = false) {
+    this.x = x; this.y = y;
+    this.vx = 0; this.vy = 0;
+    this.r = BALL_R;
+    this.number = number;
+    this.color = color;
+    this.isCue = isCue;
+    this.pocketed = false;
+    this.faceImg = null;
+    this.rotation = 0;
+  }
+  get speed() { return Math.sqrt(this.vx*this.vx + this.vy*this.vy); }
+}
+
+const BALL_COLORS = {
+  0: '#f8f8f8',
+  1: '#f4d03f', 2: '#2c3e99', 3: '#e74c3c', 4: '#8e44ad',
+  5: '#e67e22', 6: '#1abc5c', 7: '#8b0000', 8: '#111',
+  9: '#f4d03f', 10: '#2c3e99', 11: '#e74c3c',
+  12: '#8e44ad', 13: '#e67e22', 14: '#1abc5c', 15: '#8b0000',
+};
+
+let gameMode = null;
+let balls = [];
+let cueBall = null;
+let currentPlayer = 1;
+let player1Type = null; // null until first pocket
+let player2Type = null;
+let typesAssigned = false;
+let gamePhase = 'aiming';
+let aimAngle = 0;
+let powerLevel = 0;
+let powerIncreasing = true;
+let mouseX = 0, mouseY = 0;
+let mouseDown = false;
+let shotInProgress = false;
+let badGuyFace = null;
+let messageTimeout = null;
+let aiThinking = false;
+let ghostBalls = [];
+let lastCushionHit = {}; // track cushion sounds
+
+function initBalls() {
+  balls = [];
+  cueBall = new Ball(TABLE_W * 0.25, TABLE_H / 2, 0, '#f8f8f8', true);
+  balls.push(cueBall);
+
+  const rackX = TABLE_W * 0.72;
+  const rackY = TABLE_H / 2;
+  const spacing = BALL_R * 2 + 1.5;
+
+  const rackOrder = [1, 9, 2, 10, 8, 11, 3, 12, 6, 13, 14, 4, 15, 7, 5];
+  let idx = 0;
+  for (let row = 0; row < 5; row++) {
+    for (let col = 0; col <= row; col++) {
+      const num = rackOrder[idx++];
+      const x = rackX + row * spacing * Math.cos(Math.PI/6);
+      const y = rackY + (col - row/2) * spacing;
+      balls.push(new Ball(x, y, num, BALL_COLORS[num]));
+    }
+  }
+
+  if (badGuyFace && (gameMode === 'badguy-solo' || gameMode === 'badguy-duo')) {
+    const nonCueBalls = balls.filter(b => !b.isCue);
+    const faceCount = Math.min(6, nonCueBalls.length);
+    const shuffled = [...nonCueBalls].sort(() => Math.random() - 0.5);
+    for (let i = 0; i < faceCount; i++) {
+      shuffled[i].faceImg = badGuyFace;
+    }
+  }
+}
+
+function getSolidCount() { return balls.filter(b => !b.isCue && !b.pocketed && b.number >= 1 && b.number <= 7).length; }
+function getStripeCount() { return balls.filter(b => !b.isCue && !b.pocketed && b.number >= 9 && b.number <= 15).length; }
+function getPocketedSolids() { return balls.filter(b => !b.isCue && b.pocketed && b.number >= 1 && b.number <= 7); }
+function getPocketedStripes() { return balls.filter(b => !b.isCue && b.pocketed && b.number >= 9 && b.number <= 15); }
+
+function updateScore() {
+  const totalRemaining = balls.filter(b => !b.pocketed && !b.isCue).length;
+  document.getElementById('score').textContent = `🎱 剩余: ${totalRemaining}`;
+
+  // Show pocketed balls
+  if (gameMode && gameMode !== 'basic') {
+    const solids = getPocketedSolids();
+    const stripes = getPocketedStripes();
+    let html = '';
+    if (player1Type === 'solid' || (typesAssigned && player1Type === 'solid')) {
+      html += `<span style="color:#e94560">P1实:</span>${solids.map(b=>`<span class="pocketed-dot" style="background:${b.color}"></span>`).join('')} `;
+      html += `<span style="color:#3b82f6">P2花:</span>${stripes.map(b=>`<span class="pocketed-dot" style="background:${b.color}"></span>`).join('')}`;
+    } else if (player1Type === 'stripe') {
+      html += `<span style="color:#e94560">P1花:</span>${stripes.map(b=>`<span class="pocketed-dot" style="background:${b.color}"></span>`).join('')} `;
+      html += `<span style="color:#3b82f6">P2实:</span>${solids.map(b=>`<span class="pocketed-dot" style="background:${b.color}"></span>`).join('')}`;
+    }
+    document.getElementById('pocket-display').innerHTML = html || '';
+  }
+}
+
+function setMessage(msg, duration = 2000) {
+  const el = document.getElementById('message');
+  el.textContent = msg;
+  el.classList.remove('flash');
+  void el.offsetWidth;
+  el.classList.add('flash');
+  if (messageTimeout) clearTimeout(messageTimeout);
+  if (duration > 0) {
+    messageTimeout = setTimeout(() => { el.textContent = ''; }, duration);
+  }
+}
+
+function updateTurnIndicator() {
+  const el = document.getElementById('turn-indicator');
+  el.classList.remove('turn-p1', 'turn-p2', 'turn-ai');
+  if (currentPlayer === 1) {
+    const label = (gameMode === 'badguy-solo') ? '你的回合' : '玩家1回合';
+    if (player1Type && typesAssigned) {
+      el.textContent = label + (player1Type === 'solid' ? ' (实心)' : ' (花色)');
+    } else {
+      el.textContent = label;
+    }
+    el.classList.add('turn-p1');
+  } else {
+    if (gameMode === 'ai') {
+      el.textContent = '🤖 AI思考中...';
+      el.classList.add('turn-ai');
+    } else if (gameMode === 'badguy-solo') {
+      el.textContent = '继续击球';
+      el.classList.add('turn-p1');
+    } else {
+      const label = '玩家2回合';
+      if (player2Type && typesAssigned) {
+        el.textContent = label + (player2Type === 'solid' ? ' (实心)' : ' (花色)');
+      } else {
+        el.textContent = label;
+      }
+      el.classList.add('turn-p2');
+    }
+  }
+}
+
+// ==================== 物理引擎 ====================
+function updatePhysics() {
+  let allSettled = true;
+
+  for (const ball of balls) {
+    if (ball.pocketed) continue;
+    if (ball.speed < MIN_SPEED) {
+      ball.vx = 0; ball.vy = 0;
+      continue;
+    }
+    allSettled = false;
+    ball.x += ball.vx;
+    ball.y += ball.vy;
+    ball.rotation += ball.speed * 0.02;
+    ball.vx *= FRICTION;
+    ball.vy *= FRICTION;
+
+    // 桌边反弹
+    const margin = TABLE_MARGIN;
+    if (ball.x - ball.r < margin) {
+      ball.x = margin + ball.r;
+      ball.vx = Math.abs(ball.vx) * 0.7;
+      sfxCushion();
+    }
+    if (ball.x + ball.r > TABLE_W - margin) {
+      ball.x = TABLE_W - margin - ball.r;
+      ball.vx = -Math.abs(ball.vx) * 0.7;
+      sfxCushion();
+    }
+    if (ball.y - ball.r < margin) {
+      ball.y = margin + ball.r;
+      ball.vy = Math.abs(ball.vy) * 0.7;
+      sfxCushion();
+    }
+    if (ball.y + ball.r > TABLE_H - margin) {
+      ball.y = TABLE_H - margin - ball.r;
+      ball.vy = -Math.abs(ball.vy) * 0.7;
+      sfxCushion();
+    }
+  }
+
+  // 球间碰撞
+  for (let i = 0; i < balls.length; i++) {
+    if (balls[i].pocketed) continue;
+    for (let j = i + 1; j < balls.length; j++) {
+      if (balls[j].pocketed) continue;
+      const a = balls[i], b = balls[j];
+      const dx = b.x - a.x, dy = b.y - a.y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      const minDist = a.r + b.r;
+      if (dist < minDist && dist > 0.001) {
+        const nx = dx / dist, ny = dy / dist;
+        const overlap = minDist - dist;
+        a.x -= nx * overlap / 2;
+        a.y -= ny * overlap / 2;
+        b.x += nx * overlap / 2;
+        b.y += ny * overlap / 2;
+
+        const dvx = a.vx - b.vx, dvy = a.vy - b.vy;
+        const dvDotN = dvx * nx + dvy * ny;
+        if (dvDotN > 0) {
+          a.vx -= dvDotN * nx;
+          a.vy -= dvDotN * ny;
+          b.vx += dvDotN * nx;
+          b.vy += dvDotN * ny;
+        }
+        allSettled = false;
+        sfxHit();
+      }
+    }
+  }
+
+  // 进球检测
+  for (const ball of balls) {
+    if (ball.pocketed) continue;
+    for (const pocket of pockets) {
+      const dx = ball.x - pocket.x, dy = ball.y - pocket.y;
+      if (Math.sqrt(dx*dx + dy*dy) < POCKET_R - 2) {
+        ball.pocketed = true;
+        ball.vx = 0; ball.vy = 0;
+        sfxPocket();
+        break;
+      }
+    }
+  }
+
+  return allSettled;
+}
+
+function predictTrajectory() {
+  ghostBalls = [];
+  const step = 15;
+  let px = cueBall.x, py = cueBall.y;
+  let vx = Math.cos(aimAngle) * MAX_POWER * 0.5;
+  let vy = Math.sin(aimAngle) * MAX_POWER * 0.5;
+  for (let i = 0; i < 300; i++) {
+    px += vx; py += vy;
+    vx *= FRICTION; vy *= FRICTION;
+    if (i % step === 0 && px > TABLE_MARGIN + BALL_R && px < TABLE_W - TABLE_MARGIN - BALL_R && py > TABLE_MARGIN + BALL_R && py < TABLE_H - TABLE_MARGIN - BALL_R) {
+      ghostBalls.push({x: px, y: py});
+    }
+    if (Math.sqrt(vx*vx+vy*vy) < 0.05) break;
+  }
+}
+
+// ==================== 渲染 ====================
+function drawTable() {
+  // 桌面渐变
+  const grad = ctx.createLinearGradient(0, 0, TABLE_W, TABLE_H);
+  grad.addColorStop(0, '#1a8a4a');
+  grad.addColorStop(0.5, '#0d7a3e');
+  grad.addColorStop(1, '#0a5c2f');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, TABLE_W, TABLE_H);
+
+  // 木框
+  ctx.strokeStyle = '#4a1a0a';
+  ctx.lineWidth = TABLE_MARGIN;
+  ctx.strokeRect(TABLE_MARGIN/2, TABLE_MARGIN/2, TABLE_W - TABLE_MARGIN, TABLE_H - TABLE_MARGIN);
+
+  // 内边框
+  ctx.strokeStyle = '#7a4a2a';
+  ctx.lineWidth = 3;
+  ctx.strokeRect(TABLE_MARGIN, TABLE_MARGIN, TABLE_W - TABLE_MARGIN*2, TABLE_H - TABLE_MARGIN*2);
+
+  // 球袋
+  for (const p of pockets) {
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, POCKET_R, 0, Math.PI*2);
+    ctx.fillStyle = '#0a0a0a';
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, POCKET_R - 2, 0, Math.PI*2);
+    ctx.fillStyle = '#111';
+    ctx.fill();
+  }
+
+  // 开球线
+  ctx.setLineDash([6, 8]);
+  ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(TABLE_W * 0.25, TABLE_MARGIN);
+  ctx.lineTo(TABLE_W * 0.25, TABLE_H - TABLE_MARGIN);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // 中心点和D区弧
+  ctx.beginPath();
+  ctx.arc(TABLE_W/2, TABLE_H/2, 4, 0, Math.PI*2);
+  ctx.fillStyle = 'rgba(255,255,255,0.15)';
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(TABLE_W*0.25, TABLE_H/2, TABLE_H*0.15, -Math.PI/3, Math.PI/3);
+  ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+}
+
+function drawBall(ball) {
+  if (ball.pocketed) return;
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI*2);
+  ctx.clip();
+
+  if (ball.faceImg && ball.faceImg.complete && ball.faceImg.naturalWidth > 0) {
+    const s = ball.r * 2 + 1;
+    ctx.drawImage(ball.faceImg, ball.x - ball.r - 0.5, ball.y - ball.r - 0.5, s, s);
+    // 红色边框
+    ctx.strokeStyle = '#ff3333';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.arc(ball.x, ball.y, ball.r - 1, 0, Math.PI*2);
+    ctx.stroke();
+    // 愤怒表情覆盖
+    ctx.fillStyle = 'rgba(255,0,0,0.15)';
+    ctx.beginPath();
+    ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI*2);
+    ctx.fill();
+  } else {
+    // 渐变球体
+    const grad = ctx.createRadialGradient(ball.x - ball.r*0.3, ball.y - ball.r*0.3, ball.r*0.05, ball.x, ball.y, ball.r);
+    if (ball.isCue) {
+      grad.addColorStop(0, '#ffffff');
+      grad.addColorStop(0.7, '#e8e8e8');
+      grad.addColorStop(1, '#cccccc');
+    } else if (ball.number === 8) {
+      grad.addColorStop(0, '#444');
+      grad.addColorStop(1, '#000');
+    } else {
+      grad.addColorStop(0, lightenColor(ball.color, 45));
+      grad.addColorStop(0.6, ball.color);
+      grad.addColorStop(1, darkenColor(ball.color, 30));
+    }
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    // 高光
+    ctx.beginPath();
+    ctx.arc(ball.x - ball.r*0.3, ball.y - ball.r*0.3, ball.r*0.3, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(255,255,255,0.35)';
+    ctx.fill();
+
+    // 号码圈
+    if (!ball.isCue) {
+      ctx.beginPath();
+      ctx.arc(ball.x, ball.y, ball.r*0.52, 0, Math.PI*2);
+      ctx.fillStyle = '#fff';
+      ctx.fill();
+      ctx.fillStyle = '#000';
+      ctx.font = `bold ${ball.r*0.72}px "Segoe UI", system-ui`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(ball.number, ball.x, ball.y + 0.5);
+    }
+
+    // 边缘
+    ctx.strokeStyle = 'rgba(0,0,0,0.2)';
+    ctx.lineWidth = 0.5;
+    ctx.beginPath();
+    ctx.arc(ball.x, ball.y, ball.r - 0.5, 0, Math.PI*2);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawAimLine() {
+  if (gamePhase !== 'aiming' || shotInProgress || currentPlayer !== 1) return;
+  if (gameMode === 'ai' && currentPlayer === 2) return;
+  if (gameMode === 'versus' && currentPlayer === 2) return;
+
+  predictTrajectory();
+  // 虚线轨迹
+  ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+  ctx.lineWidth = 2.5;
+  ctx.setLineDash([4, 8]);
+  ctx.beginPath();
+  ctx.moveTo(cueBall.x, cueBall.y);
+  for (const g of ghostBalls) ctx.lineTo(g.x, g.y);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // 实线瞄准
+  const lineLen = 100;
+  ctx.strokeStyle = 'rgba(255,255,255,0.55)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(cueBall.x, cueBall.y);
+  ctx.lineTo(cueBall.x + Math.cos(aimAngle) * lineLen, cueBall.y + Math.sin(aimAngle) * lineLen);
+  ctx.stroke();
+
+  // 瞄准点
+  ctx.beginPath();
+  ctx.arc(cueBall.x + Math.cos(aimAngle) * 13, cueBall.y + Math.sin(aimAngle) * 13, 3.5, 0, Math.PI*2);
+  ctx.fillStyle = 'rgba(255,255,255,0.8)';
+  ctx.fill();
+}
+
+function drawGhostCue() {
+  if (gamePhase !== 'aiming' || shotInProgress) return;
+  if (gameMode === 'ai' && currentPlayer === 2) return;
+  if (gameMode === 'versus' && currentPlayer === 2) return;
+
+  const backX = cueBall.x - Math.cos(aimAngle) * 50;
+  const backY = cueBall.y - Math.sin(aimAngle) * 50;
+  const tipX = cueBall.x - Math.cos(aimAngle) * 15;
+  const tipY = cueBall.y - Math.sin(aimAngle) * 15;
+
+  // 球杆阴影
+  ctx.strokeStyle = 'rgba(0,0,0,0.2)';
+  ctx.lineWidth = 6;
+  ctx.beginPath();
+  ctx.moveTo(backX + 2, backY + 2);
+  ctx.lineTo(tipX + 2, tipY + 2);
+  ctx.stroke();
+
+  // 球杆主体
+  const cueGrad = ctx.createLinearGradient(backX, backY, tipX, tipY);
+  cueGrad.addColorStop(0, '#8B4513');
+  cueGrad.addColorStop(0.7, '#D2B48C');
+  cueGrad.addColorStop(1, '#F5DEB3');
+  ctx.strokeStyle = cueGrad;
+  ctx.lineWidth = 5;
+  ctx.beginPath();
+  ctx.moveTo(backX, backY);
+  ctx.lineTo(tipX, tipY);
+  ctx.stroke();
+
+  // 杆头
+  ctx.beginPath();
+  ctx.arc(tipX, tipY, 3.5, 0, Math.PI*2);
+  ctx.fillStyle = '#F5DEB3';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+  ctx.lineWidth = 0.5;
+  ctx.stroke();
+}
+
+function drawPowerIndicator() {
+  if (gamePhase !== 'power') return;
+  const bar = document.getElementById('power-bar-container');
+  bar.style.display = 'block';
+  document.getElementById('power-bar').style.width = (powerLevel / MAX_POWER * 100) + '%';
+}
+
+function render() {
+  ctx.clearRect(0, 0, TABLE_W, TABLE_H);
+  drawTable();
+
+  // 画球（白球最后画，确保在瞄准线上面）
+  const nonCue = balls.filter(b => !b.isCue);
+  for (const ball of nonCue) drawBall(ball);
+  if (cueBall && !cueBall.pocketed) drawBall(cueBall);
+
+  drawAimLine();
+  drawGhostCue();
+  drawPowerIndicator();
+
+  if (gamePhase !== 'power') {
+    document.getElementById('power-bar-container').style.display = 'none';
+  }
+}
+
+function lightenColor(hex, percent) {
+  const num = parseInt(hex.replace('#', ''), 16);
+  const amt = Math.round(2.55 * percent);
+  return `rgb(${Math.min(255, (num>>16)+amt)},${Math.min(255, ((num>>8)&0xFF)+amt)},${Math.min(255, (num&0xFF)+amt)})`;
+}
+function darkenColor(hex, percent) {
+  const num = parseInt(hex.replace('#', ''), 16);
+  const amt = Math.round(2.55 * percent);
+  return `rgb(${Math.max(0, (num>>16)-amt)},${Math.max(0, ((num>>8)&0xFF)-amt)},${Math.max(0, (num&0xFF)-amt)})`;
+}
+
+// ==================== 游戏逻辑 ====================
+function assignTypes(firstPocketedNum) {
+  if (typesAssigned) return;
+  if (firstPocketedNum === 8) return; // 8号球不算
+  player1Type = (firstPocketedNum >= 1 && firstPocketedNum <= 7) ? 'solid' : 'stripe';
+  player2Type = player1Type === 'solid' ? 'stripe' : 'solid';
+  typesAssigned = true;
+  updateTurnIndicator();
+}
+
+function checkGameState() {
+  updateScore();
+  const eightBall = balls.find(b => b.number === 8);
+  if (eightBall && eightBall.pocketed) {
+    const currentType = currentPlayer === 1 ? player1Type : player2Type;
+    const remaining = currentType === 'solid' ? getSolidCount() : getStripeCount();
+    const winner = currentPlayer === 1
+      ? (gameMode === 'badguy-solo' ? '你' : '玩家1')
+      : (gameMode === 'ai' ? '🤖 AI' : (gameMode === 'badguy-duo' ? '玩家2' : '玩家2'));
+    const loser = currentPlayer === 1
+      ? (gameMode === 'ai' ? '🤖 AI' : (gameMode === 'badguy-solo' ? '' : '玩家2'))
+      : (gameMode === 'badguy-solo' ? '你' : '玩家1');
+
+    if (remaining === 0) {
+      endGame(winner + ' 获胜！🎉', false);
+    } else {
+      endGame(loser + ' 获胜！（对手提前打进8号球）', true);
+    }
+    return true;
+  }
+  return false;
+}
+
+function endGame(msg, isFoul) {
+  gamePhase = 'gameover';
+  shotInProgress = false;
+  setMessage(msg, 0);
+  sfxWin();
+  updateTurnIndicator();
+}
+
+function onShotComplete() {
+  if (checkGameState()) return;
+
+  // 白球进袋
+  if (cueBall.pocketed) {
+    cueBall.pocketed = false;
+    cueBall.x = TABLE_W * 0.25;
+    cueBall.y = TABLE_H / 2;
+    cueBall.vx = 0; cueBall.vy = 0;
+    setMessage('⚪ 白球进袋！换手击球。', 2000);
+    switchPlayer();
+    updateTurnIndicator();
+    updateScore();
+    return;
+  }
+
+  const currentType = currentPlayer === 1 ? player1Type : player2Type;
+  const pocketedBalls = balls.filter(b => !b.isCue && b.pocketed && b._justPocketed);
+
+  if (pocketedBalls.length === 0) {
+    // 没打进任何球
+    switchPlayer();
+    setMessage('未进球，换手。', 2000);
+  } else {
+    // 检查首次进球来分配球型
+    if (!typesAssigned && gameMode !== 'basic') {
+      const firstNum = pocketedBalls[0].number;
+      if (firstNum !== 8) {
+        assignTypes(firstNum);
+      }
+    }
+
+    // 检查是否打进了自己的球
+    const hitOwn = currentType && typesAssigned
+      ? pocketedBalls.some(b => {
+          if (currentType === 'solid') return b.number >= 1 && b.number <= 7;
+          return b.number >= 9 && b.number <= 15;
+        })
+      : true; // 还未分配球型，任何进球都算
+
+    if (!hitOwn && typesAssigned) {
+      switchPlayer();
+      setMessage('打进了对手的球，换手。', 2000);
+    } else {
+      setMessage('🎯 好球！继续击球。', 1500);
+    }
+  }
+
+  balls.forEach(b => { b._justPocketed = false; });
+  updateTurnIndicator();
+  updateScore();
+
+  // 检查是否需要AI
+  scheduleAITurn();
+}
+
+function switchPlayer() {
+  currentPlayer = currentPlayer === 1 ? 2 : 1;
+  if (gameMode === 'badguy-solo') currentPlayer = 1;
+}
+
+function shoot(angle, power) {
+  if (shotInProgress) return;
+  shotInProgress = true;
+  gamePhase = 'shooting';
+  balls.forEach(b => { b._wasOnTable = !b.pocketed; });
+  cueBall.vx = Math.cos(angle) * power;
+  cueBall.vy = Math.sin(angle) * power;
+  ghostBalls = [];
+}
+
+function scheduleAITurn() {
+  if (gameMode === 'ai' && currentPlayer === 2 && gamePhase === 'aiming' && !shotInProgress && !aiThinking) {
+    setTimeout(() => aiShoot(), 800);
+  }
+}
+
+// ==================== AI ====================
+function aiShoot() {
+  if (aiThinking || gamePhase === 'gameover' || shotInProgress) return;
+  aiThinking = true;
+
+  const currentType = currentPlayer === 2 ? player2Type : player1Type;
+  let targetBalls;
+
+  if (!typesAssigned || !currentType) {
+    // 开局：随机选一个非8号球
+    targetBalls = balls.filter(b => !b.isCue && !b.pocketed && b.number !== 8);
+  } else {
+    targetBalls = balls.filter(b =>
+      !b.isCue && !b.pocketed &&
+      ((currentType === 'solid' && b.number >= 1 && b.number <= 7) ||
+       (currentType === 'stripe' && b.number >= 9 && b.number <= 15))
+    );
+    // 如果自己的球全打完了，瞄准8号球
+    if (targetBalls.length === 0) {
+      targetBalls = balls.filter(b => !b.isCue && !b.pocketed && b.number === 8);
+    }
+  }
+
+  if (targetBalls.length === 0) {
+    // 随便打
+    targetBalls = balls.filter(b => !b.isCue && !b.pocketed);
+  }
+
+  // AI策略：评估每个目标球到每个袋口的路径
+  let bestScore = -Infinity;
+  let bestAngle = 0, bestPower = MAX_POWER * 0.65;
+
+  for (const target of targetBalls) {
+    for (const pocket of pockets) {
+      // 目标球到袋口的距离
+      const toPocketDist = Math.sqrt((target.x-pocket.x)**2 + (target.y-pocket.y)**2);
+      // 白球到目标球的距离
+      const toTargetDist = Math.sqrt((cueBall.x-target.x)**2 + (cueBall.y-target.y)**2);
+
+      // 计算击球角度（白球->目标球->袋口）
+      const toTargetAngle = Math.atan2(target.y - cueBall.y, target.x - cueBall.x);
+      const targetToPocketAngle = Math.atan2(pocket.y - target.y, pocket.x - target.x);
+
+      // 白球需要击打目标球的反面（从目标球看向袋口的反方向）
+      const ghostX = target.x - Math.cos(targetToPocketAngle) * BALL_R * 2;
+      const ghostY = target.y - Math.sin(targetToPocketAngle) * BALL_R * 2;
+      const aimToGhostAngle = Math.atan2(ghostY - cueBall.y, ghostX - cueBall.x);
+
+      // 检查路径是否畅通
+      let pathClear = true;
+      for (const b of balls) {
+        if (b.pocketed || b === target || b.isCue) continue;
+        // 检查目标球到袋口的路径
+        const d1 = pointToLineDist(b.x, b.y, target.x, target.y, pocket.x, pocket.y);
+        if (d1 < BALL_R * 2.5) { pathClear = false; break; }
+        // 检查白球到鬼球的路径
+        const d2 = pointToLineDist(b.x, b.y, cueBall.x, cueBall.y, ghostX, ghostY);
+        if (d2 < BALL_R * 2.5) { pathClear = false; break; }
+      }
+
+      if (!pathClear) continue;
+
+      // 评分：距离袋口越近越好，距离白球越近越好
+      const score = (500 - toPocketDist) * 2 - toTargetDist * 0.5;
+      if (score > bestScore) {
+        bestScore = score;
+        bestAngle = aimToGhostAngle;
+        bestPower = MAX_POWER * (0.5 + Math.min(toTargetDist / 400, 0.4));
+      }
+    }
+  }
+
+  // 如果没有好的路径，随机选择一个角度
+  if (bestScore === -Infinity && targetBalls.length > 0) {
+    const target = targetBalls[Math.floor(Math.random() * targetBalls.length)];
+    bestAngle = Math.atan2(target.y - cueBall.y, target.x - cueBall.x);
+    bestAngle += (Math.random() - 0.5) * 0.4;
+    bestPower = MAX_POWER * (0.5 + Math.random() * 0.3);
+  }
+
+  // 添加随机误差（模拟人类）
+  bestAngle += (Math.random() - 0.5) * 0.08;
+  bestPower += (Math.random() - 0.5) * 2;
+
+  const delay = 600 + Math.random() * 800;
+  setMessage('🤖 AI正在计算最佳路线...', Math.floor(delay));
+
+  setTimeout(() => {
+    shoot(bestAngle, Math.max(3, Math.min(MAX_POWER, bestPower)));
+    aiThinking = false;
+  }, delay);
+}
+
+function pointToLineDist(px, py, x1, y1, x2, y2) {
+  const A = px - x1, B = py - y1;
+  const C = x2 - x1, D = y2 - y1;
+  const dot = A * C + B * D;
+  const lenSq = C * C + D * D;
+  let param = lenSq !== 0 ? dot / lenSq : -1;
+  param = Math.max(0, Math.min(1, param));
+  const xx = x1 + param * C, yy = y1 + param * D;
+  return Math.sqrt((px-xx)**2 + (py-yy)**2);
+}
+
+// ==================== 事件处理 ====================
+function getCanvasCoords(e) {
+  const rect = canvas.getBoundingClientRect();
+  return {
+    x: (e.clientX - rect.left) * (TABLE_W / rect.width),
+    y: (e.clientY - rect.top) * (TABLE_H / rect.height)
+  };
+}
+
+function isPlayerTurn() {
+  if (gamePhase === 'gameover' || shotInProgress) return false;
+  if (gameMode === 'ai' && currentPlayer === 2) return false;
+  if (gameMode === 'versus' && currentPlayer === 2) return false;
+  return true;
+}
+
+canvas.addEventListener('mousemove', (e) => {
+  const pos = getCanvasCoords(e);
+  mouseX = pos.x; mouseY = pos.y;
+  if (gamePhase === 'aiming' && isPlayerTurn()) {
+    aimAngle = Math.atan2(mouseY - cueBall.y, mouseX - cueBall.x);
+  }
+});
+
+canvas.addEventListener('mousedown', (e) => {
+  if (e.button !== 0) return;
+  if (gamePhase === 'aiming' && isPlayerTurn()) {
+    mouseDown = true;
+    gamePhase = 'power';
+    powerLevel = 0;
+    powerIncreasing = true;
+  }
+});
+
+canvas.addEventListener('mouseup', (e) => {
+  if (e.button !== 0) return;
+  if (gamePhase === 'power' && mouseDown) {
+    mouseDown = false;
+    shoot(aimAngle, powerLevel);
+  }
+});
+
+canvas.addEventListener('mouseleave', () => {
+  if (gamePhase === 'power' && mouseDown) {
+    mouseDown = false;
+    shoot(aimAngle, powerLevel);
+  }
+});
+
+// 触屏
+canvas.addEventListener('touchmove', (e) => {
+  e.preventDefault();
+  const rect = canvas.getBoundingClientRect();
+  const touch = e.touches[0];
+  mouseX = (touch.clientX - rect.left) * (TABLE_W / rect.width);
+  mouseY = (touch.clientY - rect.top) * (TABLE_H / rect.height);
+  if (gamePhase === 'aiming' && isPlayerTurn()) {
+    aimAngle = Math.atan2(mouseY - cueBall.y, mouseX - cueBall.x);
+  }
+}, {passive: false});
+
+canvas.addEventListener('touchstart', (e) => {
+  e.preventDefault();
+  if (gamePhase === 'aiming' && isPlayerTurn()) {
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0];
+    mouseX = (touch.clientX - rect.left) * (TABLE_W / rect.width);
+    mouseY = (touch.clientY - rect.top) * (TABLE_H / rect.height);
+    aimAngle = Math.atan2(mouseY - cueBall.y, mouseX - cueBall.x);
+    mouseDown = true;
+    gamePhase = 'power';
+    powerLevel = 0;
+    powerIncreasing = true;
+  }
+}, {passive: false});
+
+canvas.addEventListener('touchend', (e) => {
+  e.preventDefault();
+  if (gamePhase === 'power' && mouseDown) {
+    mouseDown = false;
+    shoot(aimAngle, powerLevel);
+  }
+}, {passive: false});
+
+// 键盘快捷键
+document.addEventListener('keydown', (e) => {
+  if (gamePhase === 'gameover') return;
+  switch(e.key.toLowerCase()) {
+    case 'r': resetGame(); break;
+    case 'escape': backToMenu(); break;
+    case ' ':
+      e.preventDefault();
+      if (gamePhase === 'aiming' && isPlayerTurn()) {
+        gamePhase = 'power'; powerLevel = 0; powerIncreasing = true; mouseDown = true;
+      } else if (gamePhase === 'power' && mouseDown) {
+        mouseDown = false; shoot(aimAngle, powerLevel);
+      }
+      break;
+  }
+});
+
+// ==================== 游戏循环 ====================
+let lastTime = 0;
+let settleFrames = 0;
+
+function gameLoop(timestamp) {
+  const dt = Math.min((timestamp - lastTime) / 16.67, 3);
+  lastTime = timestamp;
+
+  if (gamePhase === 'power' && mouseDown) {
+    if (powerIncreasing) {
+      powerLevel += 0.35;
+      if (powerLevel >= MAX_POWER) powerIncreasing = false;
+    } else {
+      powerLevel -= 0.35;
+      if (powerLevel <= 0) powerIncreasing = true;
+    }
+  }
+
+  if (gamePhase === 'shooting') {
+    const settled = updatePhysics();
+    if (settled) {
+      settleFrames++;
+      if (settleFrames > 20) {
+        settleFrames = 0;
+        shotInProgress = false;
+        gamePhase = 'aiming';
+        balls.forEach(b => {
+          if (b._wasOnTable && b.pocketed) b._justPocketed = true;
+          delete b._wasOnTable;
+        });
+        onShotComplete();
+      }
+    } else {
+      settleFrames = 0;
+    }
+  }
+
+  render();
+  requestAnimationFrame(gameLoop);
+}
+
+// ==================== 模式切换 ====================
+function startGame(mode) {
+  gameMode = mode;
+  if (mode !== 'badguy-solo' && mode !== 'badguy-duo') badGuyFace = null;
+  balls = [];
+  currentPlayer = 1;
+  player1Type = null; player2Type = null; typesAssigned = false;
+  gamePhase = 'aiming';
+  shotInProgress = false;
+  settleFrames = 0;
+  aiThinking = false;
+  ghostBalls = [];
+  powerLevel = 0;
+  mouseDown = false;
+
+  document.getElementById('menu').style.display = 'none';
+  document.getElementById('face-upload-area').style.display = 'none';
+  document.getElementById('game-container').style.display = 'flex';
+  document.getElementById('power-bar-container').style.display = 'none';
+  document.getElementById('pocket-display').innerHTML = '';
+
+  const labels = {
+    basic: '🎱 基础模式', ai: '🤖 AI对战', versus: '👥 双人对战',
+    'badguy-solo': '💀 暴击坏人·单人', 'badguy-duo': '💀 暴击坏人·双人'
+  };
+  document.getElementById('mode-label').textContent = labels[mode] || mode;
+
+  initBalls();
+  updateScore();
+  updateTurnIndicator();
+  setMessage('拖动鼠标瞄准 🎯 按住蓄力后释放击球！', 3000);
+
+  if (mode === 'ai') {
+    // AI先手的情况随机
+    if (Math.random() < 0.5) {
+      currentPlayer = 2;
+      updateTurnIndicator();
+      setTimeout(() => aiShoot(), 1200);
+    }
+  }
+}
+
+function startBadGuyMode() {
+  document.getElementById('menu').style.display = 'none';
+  document.getElementById('face-upload-area').style.display = 'flex';
+  document.getElementById('bad-guy-mode-select').style.display = 'none';
+  document.getElementById('face-preview').style.display = 'none';
+  document.getElementById('face-input').value = '';
+}
+
+function handleFaceUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = new Image();
+    img.onload = function() {
+      badGuyFace = img;
+      document.getElementById('face-preview').src = e.target.result;
+      document.getElementById('face-preview').style.display = 'block';
+      document.getElementById('bad-guy-mode-select').style.display = 'flex';
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function resetGame() {
+  balls = [];
+  currentPlayer = 1;
+  player1Type = null; player2Type = null; typesAssigned = false;
+  gamePhase = 'aiming';
+  shotInProgress = false;
+  settleFrames = 0;
+  aiThinking = false;
+  ghostBalls = [];
+  powerLevel = 0;
+  mouseDown = false;
+  document.getElementById('pocket-display').innerHTML = '';
+  initBalls();
+  updateScore();
+  updateTurnIndicator();
+  setMessage('🔄 游戏已重置！', 2000);
+  if (gameMode === 'ai' && Math.random() < 0.5) {
+    currentPlayer = 2;
+    updateTurnIndicator();
+    setTimeout(() => aiShoot(), 1200);
+  }
+}
+
+function backToMenu() {
+  gameMode = null;
+  balls = [];
+  shotInProgress = false;
+  gamePhase = 'aiming';
+  aiThinking = false;
+
+  document.getElementById('menu').style.display = 'flex';
+  document.getElementById('face-upload-area').style.display = 'none';
+  document.getElementById('game-container').style.display = 'none';
+  document.getElementById('power-bar-container').style.display = 'none';
+  document.getElementById('message').textContent = '';
+  document.getElementById('face-preview').style.display = 'none';
+  document.getElementById('bad-guy-mode-select').style.display = 'none';
+  document.getElementById('pocket-display').innerHTML = '';
+}
+
+// 启动
+initBalls();
+updateScore();
+requestAnimationFrame(gameLoop);
+</script>
+</body>
+</html>
