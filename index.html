@@ -757,37 +757,97 @@ function drawGhostCue() {
   if (gameMode === 'ai' && currentPlayer === 2) return;
   if (gameMode === 'versus' && currentPlayer === 2) return;
 
-  const backX = cueBall.x - Math.cos(aimAngle) * 50;
-  const backY = cueBall.y - Math.sin(aimAngle) * 50;
-  const tipX = cueBall.x - Math.cos(aimAngle) * 15;
-  const tipY = cueBall.y - Math.sin(aimAngle) * 15;
+  // 参考真实斯诺克杆：木质细杆头 → 黑色粗握把
+  const totalLen = 220;           // 球杆总长度
+  const tipStart = 18;            // 杆头距白球距离
+  const shaftLen = 140;           // 前节木杆长度
+  const buttLen = totalLen - shaftLen; // 后节黑色握把长度
 
-  // 球杆阴影
-  ctx.strokeStyle = 'rgba(0,0,0,0.2)';
-  ctx.lineWidth = 6;
-  ctx.beginPath();
-  ctx.moveTo(backX + 2, backY + 2);
-  ctx.lineTo(tipX + 2, tipY + 2);
-  ctx.stroke();
+  // 基础端点
+  const tipX = cueBall.x - Math.cos(aimAngle) * tipStart;
+  const tipY = cueBall.y - Math.sin(aimAngle) * tipStart;
+  const backX = cueBall.x - Math.cos(aimAngle) * (tipStart + totalLen);
+  const backY = cueBall.y - Math.sin(aimAngle) * (tipStart + totalLen);
+  const jointX = cueBall.x - Math.cos(aimAngle) * (tipStart + shaftLen);
+  const jointY = cueBall.y - Math.sin(aimAngle) * (tipStart + shaftLen);
 
-  // 球杆主体
-  const cueGrad = ctx.createLinearGradient(backX, backY, tipX, tipY);
-  cueGrad.addColorStop(0, '#8B4513');
-  cueGrad.addColorStop(0.7, '#D2B48C');
-  cueGrad.addColorStop(1, '#F5DEB3');
-  ctx.strokeStyle = cueGrad;
-  ctx.lineWidth = 5;
-  ctx.beginPath();
-  ctx.moveTo(backX, backY);
-  ctx.lineTo(tipX, tipY);
-  ctx.stroke();
+  // 方向单位向量
+  const ux = Math.cos(aimAngle), uy = Math.sin(aimAngle);
 
-  // 杆头
+  // 垂直向量
+  const px = -uy, py = ux;
+
+  // 球杆宽度（前细后粗）
+  const tipW = 1.6;      // 杆头宽度
+  const jointW = 3.5;    // 前节末端宽度
+  const buttW = 6.5;     // 握把最粗处
+  const backW = 5.0;     // 尾部
+
+  // 阴影偏移
+  const shOff = 2;
+  function drawCueSegment(shadow, x1, y1, w1, x2, y2, w2, color) {
+    ctx.fillStyle = color;
+    if (shadow) ctx.fillStyle = 'rgba(0,0,0,0.25)';
+    ctx.beginPath();
+    ctx.moveTo(x1 + px * w1 + (shadow ? shOff : 0), y1 + py * w1 + (shadow ? shOff : 0));
+    ctx.lineTo(x2 + px * w2 + (shadow ? shOff : 0), y2 + py * w2 + (shadow ? shOff : 0));
+    ctx.lineTo(x2 - px * w2 + (shadow ? shOff : 0), y2 - py * w2 + (shadow ? shOff : 0));
+    ctx.lineTo(x1 - px * w1 + (shadow ? shOff : 0), y1 - py * w1 + (shadow ? shOff : 0));
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  // 绘制阴影
+  drawCueSegment(true, tipX, tipY, tipW, jointX, jointY, jointW, null);
+  drawCueSegment(true, jointX, jointY, jointW, backX, backY, buttW, null);
+
+  // 前节木杆（浅木色到深木色渐变）
+  const shaftGrad = ctx.createLinearGradient(tipX - ux*10, tipY - uy*10, jointX + ux*10, jointY + uy*10);
+  shaftGrad.addColorStop(0, '#f5e6c8');
+  shaftGrad.addColorStop(0.3, '#e6c99a');
+  shaftGrad.addColorStop(0.7, '#c8a06e');
+  shaftGrad.addColorStop(1, '#a47c48');
+  drawCueSegment(false, tipX, tipY, tipW, jointX, jointY, jointW, shaftGrad);
+
+  // 木杆纹理线
+  ctx.strokeStyle = 'rgba(101,67,33,0.2)';
+  ctx.lineWidth = 0.8;
+  for (let k = 0.15; k < 0.85; k += 0.18) {
+    const mx = tipX + (jointX - tipX) * k;
+    const my = tipY + (jointY - tipY) * k;
+    const mw = tipW + (jointW - tipW) * k;
+    ctx.beginPath();
+    ctx.moveTo(mx + px * mw * 0.3, my + py * mw * 0.3);
+    ctx.lineTo(mx - px * mw * 0.3, my - py * mw * 0.3);
+    ctx.stroke();
+  }
+
+  // 连接环（银色金属环）
+  drawCueSegment(false, jointX - ux*2, jointY - uy*2, jointW + 0.5, jointX + ux*2, jointY + uy*2, jointW + 0.5, '#b0b0b0');
+
+  // 后节黑色握把（黑色到深灰渐变）
+  const buttGrad = ctx.createLinearGradient(jointX, jointY, backX, backY);
+  buttGrad.addColorStop(0, '#2a2a2a');
+  buttGrad.addColorStop(0.5, '#111111');
+  buttGrad.addColorStop(1, '#050505');
+  drawCueSegment(false, jointX + ux*2, jointY + uy*2, jointW + 0.5, backX, backY, buttW, buttGrad);
+
+  // 尾端银色装饰
+  const endCapX = backX - ux * 8;
+  const endCapY = backY - uy * 8;
+  drawCueSegment(false, backX, backY, buttW, endCapX, endCapY, backW, '#888888');
+  // 尾端小圆
+  ctx.fillStyle = '#aaaaaa';
   ctx.beginPath();
-  ctx.arc(tipX, tipY, 3.5, 0, Math.PI*2);
-  ctx.fillStyle = '#F5DEB3';
+  ctx.ellipse(endCapX, endCapY, backW, backW * 0.4, aimAngle, 0, Math.PI * 2);
   ctx.fill();
-  ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+
+  // 杆头皮头（浅色小圆）
+  ctx.fillStyle = '#f8e8c8';
+  ctx.beginPath();
+  ctx.ellipse(tipX, tipY, tipW, tipW * 0.35, aimAngle, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(0,0,0,0.2)';
   ctx.lineWidth = 0.5;
   ctx.stroke();
 }
